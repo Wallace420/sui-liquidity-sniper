@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./db.db"
+}
+
+
+model EventsTable {
+  id        String  @id
+  timestamp Int
+  data      String
+}
+
+
+model Cursor {
+  id          String  @id
+  eventSeq    String
+  txDigest    String
+}
+
+model Trade {
+  id                 Int      @id @default(autoincrement())
+  poolAddress        String   @unique
+  tokenAddress       String
+  tokenAmount        String
+  buyDigest          String
+  sellDigest         String?
+  dex                String
+  updatedAt          DateTime
+  suiSpentAmount     String
+  suiReceivedAmount  String?
+  initialPoolAmountA String
+  initialPoolAmountB String
+  suiIsA             Boolean
+  scamProbability    Float
+}
