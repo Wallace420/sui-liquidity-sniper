@@ -46,6 +46,7 @@ export async function getQuote(pool: Pool) {
 
   const a2b = pool.coinTypeA.endsWith("::sui::SUI");
 
+  // SUI QUANTITY
   const amount = 0.05 * Math.pow(10, 9)
   const amountIn = new BN(amount)
 
@@ -82,6 +83,7 @@ export async function buy(poolData: ParsedPoolData) {
   const byAmountIn = true
   const slippage = Percentage.fromDecimal(d(10))
 
+  // SUI QUANTITY
   const amount = 0.05 * Math.pow(10, 9)
   console.log(amount)
   const amountIn = new BN(amount)

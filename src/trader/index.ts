@@ -106,10 +106,6 @@ export async function trade(digest: string, dex: SUPPORTED_DEX = 'Cetus') {
         await buyAction(txId as string, info)
         break
 
-      case 'SuiSwap':
-        //txId = await tryAgg(_coinIn, _coinOut, amount.toString())
-        break
-
       default:
         break;
     }

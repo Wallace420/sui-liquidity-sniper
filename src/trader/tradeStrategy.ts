@@ -126,7 +126,6 @@ export async function sellAction(TradingInfo: TradingInfo) {
   }
 
   if (tx) {
-    console.log(tx, "tx de venda")
     const trade = await client.waitForTransaction({
       digest: tx,
       options: {
@@ -138,7 +137,6 @@ export async function sellAction(TradingInfo: TradingInfo) {
 
     const { balanceChanges } = trade
 
-    console.log(balanceChanges, "balance changes")
     if (!balanceChanges) return null;
 
     if (balanceChanges) {
