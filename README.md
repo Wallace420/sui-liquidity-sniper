@@ -98,7 +98,7 @@ Run the project
 *The bot will only acquire tokens with liquidity created by the migrator from MovePump.*
 ## Authors
 
-- [@AguaPotavel](https://www.github.com/AguaPotavel)
+- @DirtySanch3z
 
 
 ## FAQ
