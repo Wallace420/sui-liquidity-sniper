@@ -112,6 +112,7 @@ Because tokens listed on Turbos, Bluefi, FlowX considerably less than in the oth
 Due to the prevalence of scam bots, they often create a token, provide liquidity, and then remove it as soon as users start buying the token, leaving buyers at a loss.
 
 
+<<<<<<< HEAD
 ### Upcoming Features
 
 ### Performance-Optimierungen
@@ -143,4 +144,6 @@ Verbesserung der Multi-Wallet-Verwaltung für bis zu 40 Wallets1
 Implementierung verbesserter Backup- und Sicherheitsprotokolle8
 
 Diese Updates werden schrittweise implementiert werden, um die Stabilität des Bots zu gewährleisten und von den neuen SUI-Blockchain-Funktionen optimal zu profitieren.
+=======
+>>>>>>> 7a653ef1dec3964b3d647b498c1e2b654d4b5177
 
