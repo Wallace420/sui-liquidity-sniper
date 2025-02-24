@@ -8,7 +8,7 @@ export async function getAccounActivity(address: string, cursor: string | null){
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': process.env.SUIVISION_API_KEY
+      'x-api-key': process.env.SUIVISION_API_KEY || ''
     },
   })
 

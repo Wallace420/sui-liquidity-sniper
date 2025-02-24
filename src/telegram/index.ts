@@ -2,7 +2,6 @@ import TelegramBot from 'node-telegram-bot-api';
 import { getSuiPrice } from '@7kprotocol/sdk-ts';
 import { getTrade } from '../db/trade';
 import { SUI } from '../chain/config';
-
 import dotenv from 'dotenv';
 
 let USDollar = new Intl.NumberFormat('en-US', {

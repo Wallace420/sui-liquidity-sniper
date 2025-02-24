@@ -112,9 +112,35 @@ Because tokens listed on Turbos, Bluefi, FlowX considerably less than in the oth
 Due to the prevalence of scam bots, they often create a token, provide liquidity, and then remove it as soon as users start buying the token, leaving buyers at a loss.
 
 
-## Support
+### Upcoming Features
 
-Feel free to support me: 0xd43c78676003e50b0e76360196656a1c3f050f5f960f35c80641600a267f420f
+### Performance-Optimierungen
+Integration von Mysticeti V2, das schnellere Transaktionsverarbeitung ermöglicht6
 
+Anpassung an Remora, die neue horizontale Skalierungslösung von SUI, die hundertausende Transaktionen pro Sekunde verarbeiten kann6
 
+Implementierung der neuen "Programmable Peer-to-Peer Tunnels" für reduzierte Latenzzeiten6
+
+### DEX-Integration
+Erweiterung um neue DEXs wie Steamm von Suilend4
+
+Anpassung an die verbesserte Kapitaleffizienz durch neue "Bank"-Features4
+
+Integration der neuen yield-bearing LP Token Funktionalität4
+
+### Sicherheitsupdates
+Implementierung der neuen Zero-Knowledge Proofs für verbesserte Privatsphäre6
+
+Aktualisierung der Honeypot-Erkennung für neue Scam-Muster1
+
+Erweiterung der Gas-Preis-Optimierung gemäß SIP-45 für Hochlastzeiten4
+
+Wallet-Funktionalität
+Integration der neuen Phantom und Backpack Wallet-Funktionen4
+
+Verbesserung der Multi-Wallet-Verwaltung für bis zu 40 Wallets1
+
+Implementierung verbesserter Backup- und Sicherheitsprotokolle8
+
+Diese Updates werden schrittweise implementiert werden, um die Stabilität des Bots zu gewährleisten und von den neuen SUI-Blockchain-Funktionen optimal zu profitieren.
 
