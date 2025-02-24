@@ -1,7 +1,7 @@
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { config } from 'dotenv';
-import { initCetusSDK } from '@cetusprotocol/cetus-sui-clmm-sdk';
-import { WalletManager } from '../wallet/wallet-manager';
+import { CetusClmmSDK } from '@cetusprotocol/cetus-sui-clmm-sdk';
+import { WalletManager } from '../wallet/wallet-manager.js';
 
 export type SUPPORTED_DEX = 'Cetus' | 'BlueMove';
 
@@ -37,15 +37,24 @@ async function getWorkingRPC() {
   throw new Error('All RPC endpoints failed');
 }
 
-// Initialize client with default RPC, will be updated after finding working RPC
+// Initialize client
 let client = new SuiClient({ url: RPC_ENDPOINTS[0] });
-let cetusClmmSDK = initCetusSDK({network: 'mainnet'});
 
-// Update client and SDK with working RPC
-getWorkingRPC().then(rpcUrl => {
+// Initialize SDK with default mainnet config
+let cetusClmmSDK = new CetusClmmSDK({
+  url: RPC_ENDPOINTS[0],
+  network: 'mainnet'
+});
+
+// Update RPC connection
+getWorkingRPC().then(async rpcUrl => {
   console.log(`Using RPC endpoint: ${rpcUrl}`);
   client = new SuiClient({ url: rpcUrl });
-  cetusClmmSDK = initCetusSDK({network: 'mainnet'});
+  // Update SDK with new RPC
+  cetusClmmSDK = new CetusClmmSDK({
+    url: rpcUrl,
+    network: 'mainnet'
+  });
 }).catch(error => {
   console.error('Failed to find working RPC:', error);
   process.exit(1);
