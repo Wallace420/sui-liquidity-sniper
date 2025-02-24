@@ -112,9 +112,4 @@ Because tokens listed on Turbos, Bluefi, FlowX considerably less than in the oth
 Due to the prevalence of scam bots, they often create a token, provide liquidity, and then remove it as soon as users start buying the token, leaving buyers at a loss.
 
 
-## Support
-
-Feel free to support me: 0xd43c78676003e50b0e76360196656a1c3f050f5f960f35c80641600a267f420f
-
-
 
