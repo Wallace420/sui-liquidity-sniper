@@ -9,9 +9,11 @@ import { sellWithAgg } from ".";
 
 let trades: any[] = []
 
-const tradesRunning = new Set<string>()
-const stopLoss: Map<string, number> = new Map()
-const maxVariance: Map<string, number> = new Map()
+const tradesRunning = new Set<string>();
+const stopLoss: Map<string, number> = new Map();
+const maxVariance: Map<string, number> = new Map();
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 1000; // 1 second
 
 export type TradingInfo = {
   initialSolAmount: string,
@@ -26,22 +28,34 @@ export type TradingInfo = {
 
 
 async function tryAgg(_coinIn: string, _coinOut: string, amount: string) {
-  let retries = 0
-  let txId: string | null = null
+  let retries = 0;
+  let txId: string | null = null;
+  let lastError: Error | null = null;
 
-  do {
-    const tx = await sellWithAgg(_coinIn, amount)
-    if (tx) {
-      txId = tx
-      break
-    } else {
-      console.log("Retrying...")
+  while (retries < MAX_RETRIES) {
+    try {
+      const tx = await sellWithAgg(_coinIn, amount);
+      if (tx) {
+        txId = tx;
+        break;
+      }
+    } catch (error) {
+      lastError = error as Error;
+      console.error(`Attempt ${retries + 1}/${MAX_RETRIES} failed:`, error);
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
-  } while (retries++ < 3)
+    retries++;
+    if (retries < MAX_RETRIES) {
+      console.log(`Retrying in ${RETRY_DELAY}ms... (${retries}/${MAX_RETRIES})`);
+      await wait(RETRY_DELAY);
+    }
+  }
 
-  return txId
+  if (!txId && lastError) {
+    throw new Error(`Failed after ${MAX_RETRIES} attempts: ${lastError.message}`);
+  }
+
+  return txId;
 }
 
 export async function buyAction(digest: string, info: ParsedPoolData | null) {
@@ -233,54 +247,69 @@ export async function runTrade() {
 
 
 async function performTrade(info: TradingInfo) {
-  console.log("PERFORM TRADE::", info)
-  let variacao = ((Number(info.currentAmount) - Number(info.initialSolAmount)) / Number(info.initialSolAmount)) * 100
+  if (tradesRunning.has(info.tokenToSell)) {
+    console.log(`Trade already running for ${info.tokenToSell}`);
+    return;
+  }
 
-  const max = maxVariance.get(info.tokenToSell) || -1
-  const stop = stopLoss.get(info.tokenToSell) || -10
+  try {
+    tradesRunning.add(info.tokenToSell);
+    console.log("PERFORM TRADE::", info);
+    
+    const variacao = ((Number(info.currentAmount) - Number(info.initialSolAmount)) / Number(info.initialSolAmount)) * 100;
+    const max = maxVariance.get(info.tokenToSell) || -1;
+    const stop = stopLoss.get(info.tokenToSell) || -10;
 
-  if (info.scamProbability > 50) {
-    try {
-      await wait(15000)
-      await sellAction(info)
-    } catch (e) {
-      sendErrorMessage({ message: "Scam detected, but could not sell, sell by your own" })
+    // High scam probability - sell quickly
+    if (info.scamProbability > 50) {
+      console.log(`High scam probability (${info.scamProbability}%) detected for ${info.tokenToSell}`);
+      try {
+        await Promise.race([
+          sellAction(info),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Sell timeout')), 20000))
+        ]);
+      } catch (e: any) {
+        console.error('Emergency sell failed:', e);
+        sendErrorMessage({ message: `Scam detected (${info.scamProbability}%), emergency sell failed: ${e?.message || 'Unknown error'}` });
+      }
+      return;
     }
-  }
 
-  if (variacao > max) {
-    maxVariance.set(info.tokenToSell, variacao)
-  }
-
-  if (max > 10) {
-    stopLoss.set(info.tokenToSell, max - 10)
-  }
-
-  if (variacao < stop) {
-    // sellAction
-    try {
-      await sellAction(info)
-    }catch(e){
-      return runTrade()
+    // Update max variance and stop loss
+    if (variacao > max) {
+      maxVariance.set(info.tokenToSell, variacao);
+      if (variacao > 10) {
+        const newStop = variacao - 10;
+        stopLoss.set(info.tokenToSell, newStop);
+        console.log(`Updated stop loss to ${newStop}% for ${info.tokenToSell}`);
+      }
     }
-  }
 
-  if (variacao > 1) {
-    try {
-      await sellAction(info)
-    }catch(e){
-      console.log(e)
-      return runTrade()
+    // Check sell conditions
+    if (variacao < stop || variacao > 1) {
+      console.log(`Selling ${info.tokenToSell} - Variation: ${variacao}%, Stop: ${stop}%, Max: ${max}%`);
+      try {
+        await sellAction(info);
+      } catch (e: any) {
+        console.error('Sell failed:', e);
+        sendErrorMessage({ 
+          message: `Sell failed for ${info.tokenToSell}: ${e?.message || 'Unknown error'}\nVariation: ${variacao}%\nStop: ${stop}%\nMax: ${max}%` 
+        });
+      }
+      return;
     }
+
+    sendUpdateMessage({
+      tokenAddress: info.tokenToSell,
+      variacao,
+      max,
+      stop
+    });
+    
+  } catch (e: any) {
+    console.error('Trade execution error:', e);
+    sendErrorMessage({ message: `Trade error for ${info.tokenToSell}: ${e?.message || 'Unknown error'}` });
+  } finally {
+    tradesRunning.delete(info.tokenToSell);
   }
-
-  console.log(variacao, max, stop)
-
-  sendUpdateMessage({
-    tokenAddress: info.tokenToSell,
-    variacao,
-    max,
-    stop
-  })
 }
-

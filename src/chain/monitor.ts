@@ -5,20 +5,31 @@ import { getTransactionInfo } from "./extractor";
 import { trade } from "../trader";
 import { Transaction, ClusterNode } from '../types'; // Adjust the import path as needed
 
-const POLLING_INTERVAL_MS = 100;
+const POLLING_INTERVAL_MS = 50; // Reduced from 100ms for faster response
+const MAX_CONCURRENT_JOBS = 3;
+const ERROR_RETRY_DELAY = 1000;
+const MAX_ERROR_RETRIES = 3;
 
 type SuiEventsCursor = EventId | null | undefined;
 
 type EventExecutionResult = {
   cursor: SuiEventsCursor,
-  hasNextPage: boolean
+  hasNextPage: boolean,
+  error?: Error
 };
 
 type EventTracker = {
   type: string,
   filter: SuiEventFilter,
-  callback: (events: SuiEvent[], type: string) => any;
+  callback: (events: SuiEvent[], type: string) => Promise<void>,
+  isRunning?: boolean,
+  errorCount?: number,
+  lastError?: Error
 };
+
+// Track active jobs and errors
+const activeJobs = new Set<string>();
+const errorCounts = new Map<string, number>();
 
 const EVENTS_TO_TRACK: EventTracker[] = [
   {
@@ -111,6 +122,13 @@ const executeEventJob = async (
   tracker: EventTracker,
   cursor: SuiEventsCursor
 ): Promise<EventExecutionResult> => {
+  if (activeJobs.size >= MAX_CONCURRENT_JOBS) {
+    return { cursor, hasNextPage: false };
+  }
+
+  const jobId = `${tracker.type}-${Date.now()}`;
+  activeJobs.add(jobId);
+
   try {
     const { data, hasNextPage, nextCursor } = await client.queryEvents({
       query: tracker.filter,
@@ -118,24 +136,43 @@ const executeEventJob = async (
       order: 'ascending'
     });
 
-    await tracker.callback(data, tracker.type);
+    if (data.length > 0) {
+      try {
+        await tracker.callback(data, tracker.type);
+        errorCounts.delete(tracker.type); // Reset error count on success
+      } catch (callbackError) {
+        console.error(`Callback error for ${tracker.type}:`, callbackError);
+        const currentErrors = (errorCounts.get(tracker.type) || 0) + 1;
+        errorCounts.set(tracker.type, currentErrors);
+        
+        if (currentErrors >= MAX_ERROR_RETRIES) {
+          throw new Error(`Max retries exceeded for ${tracker.type}`);
+        }
+        
+        return {
+          cursor,
+          hasNextPage: true,
+          error: callbackError as Error
+        };
+      }
+    }
 
     if (nextCursor && data.length > 0) {
       await saveLatestCursor(tracker, nextCursor);
-
-      return {
-        cursor: nextCursor,
-        hasNextPage
-      };
+      return { cursor: nextCursor, hasNextPage };
     }
-  } catch (e) {
-    console.log(e);
-  }
 
-  return {
-    cursor,
-    hasNextPage: false
-  };
+    return { cursor, hasNextPage: false };
+  } catch (e) {
+    console.error(`Job ${jobId} failed:`, e);
+    return {
+      cursor,
+      hasNextPage: false,
+      error: e as Error
+    };
+  } finally {
+    activeJobs.delete(jobId);
+  }
 };
 
 const saveLatestCursor = async (tracker: EventTracker, cursor: SuiEventsCursor) => {
@@ -164,15 +201,42 @@ const getLatestCursor = async (tracker: EventTracker) => {
 };
 
 const runEventJob = async (client: SuiClient, tracker: EventTracker, cursor: SuiEventsCursor) => {
-  const result = await executeEventJob(client, tracker, cursor);
+  if (tracker.isRunning) {
+    return;
+  }
 
-  // Trigger a timeout. Depending on the result, we either wait 0ms or the polling interval.
-  setTimeout(
-    () => {
-      runEventJob(client, tracker, result.cursor);
-    },
-    result.hasNextPage ? 0 : POLLING_INTERVAL_MS,
-  );
+  tracker.isRunning = true;
+
+  try {
+    const result = await executeEventJob(client, tracker, cursor);
+
+    if (result.error) {
+      console.error(`Error in event job ${tracker.type}:`, result.error);
+      await new Promise(resolve => setTimeout(resolve, ERROR_RETRY_DELAY));
+    }
+
+    // Dynamic polling interval based on activity
+    const interval = result.hasNextPage ? 0 : POLLING_INTERVAL_MS;
+    
+    setTimeout(
+      () => {
+        tracker.isRunning = false;
+        runEventJob(client, tracker, result.cursor);
+      },
+      interval
+    );
+  } catch (e) {
+    console.error(`Fatal error in event job ${tracker.type}:`, e);
+    tracker.isRunning = false;
+    tracker.lastError = e as Error;
+    
+    // Implement exponential backoff for retries
+    const retryDelay = Math.min(ERROR_RETRY_DELAY * Math.pow(2, tracker.errorCount || 0), 30000);
+    setTimeout(() => {
+      tracker.errorCount = (tracker.errorCount || 0) + 1;
+      runEventJob(client, tracker, cursor);
+    }, retryDelay);
+  }
 };
 
 const getLastestCursorOnInit = async (client: SuiClient) => {
@@ -211,4 +275,3 @@ function handleTransaction(transaction: LocalTransaction) {
 function handleClusterNode(transaction: Transaction, clusterNode: LocalClusterNode) {
   // ...existing code...
 }
-
