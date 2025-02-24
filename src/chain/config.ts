@@ -40,20 +40,21 @@ async function getWorkingRPC() {
 // Initialize client
 let client = new SuiClient({ url: RPC_ENDPOINTS[0] });
 
-// Initialize SDK with default mainnet config
+// Initialize SDK with mainnet configuration
 let cetusClmmSDK = new CetusClmmSDK({
-  url: RPC_ENDPOINTS[0],
-  network: 'mainnet'
+  network: 'mainnet',
+  rpcUrl: RPC_ENDPOINTS[0]
 });
 
 // Update RPC connection
 getWorkingRPC().then(async rpcUrl => {
   console.log(`Using RPC endpoint: ${rpcUrl}`);
   client = new SuiClient({ url: rpcUrl });
+  
   // Update SDK with new RPC
   cetusClmmSDK = new CetusClmmSDK({
-    url: rpcUrl,
-    network: 'mainnet'
+    network: 'mainnet',
+    rpcUrl: rpcUrl
   });
 }).catch(error => {
   console.error('Failed to find working RPC:', error);
