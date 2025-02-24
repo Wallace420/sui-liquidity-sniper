@@ -30,7 +30,6 @@ export async function getCetusPools() {
   return poolsWithLiquidity
 }
 
-
 export async function getQuote(pool: Pool) {
   const { cetusClmmSDK } = SUI
 
@@ -62,7 +61,6 @@ export async function getQuote(pool: Pool) {
 
   return res
 }
-
 
 export async function buy(poolData: ParsedPoolData) {
   const { cetusClmmSDK, client } = SUI

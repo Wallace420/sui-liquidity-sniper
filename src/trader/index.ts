@@ -62,7 +62,6 @@ async function tryAgg(_coinIn: string, _coinOut: string, amount: string) {
   return txId
 }
 
-
 export async function trade(digest: string, dex: SUPPORTED_DEX = 'Cetus') {
   const info = await getTransactionInfo(digest, dex)
 

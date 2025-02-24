@@ -29,7 +29,6 @@ async function validateConnection() {
 }
 
 export const SUI = {
-  signer: keypair,
   validateConnection,
   cetusClmmSDK,
   client,
