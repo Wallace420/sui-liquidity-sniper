@@ -1,4 +1,4 @@
-import wait from "./wait";
+import wait from "./wait.js";
 
 class TaskQueue {
   isProcessing: boolean;

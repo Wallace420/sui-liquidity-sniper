@@ -1,39 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./db.db"
+  url      = "file:./dev.db"
 }
-
-
-model EventsTable {
-  id        String  @id
-  timestamp Int
-  data      String
-}
-
 
 model Cursor {
-  id          String  @id
-  eventSeq    String
-  txDigest    String
+  id        String   @id
+  eventSeq  String
+  txDigest  String
+  updatedAt DateTime @default(now())
 }
 
 model Trade {
-  id                 Int      @id @default(autoincrement())
-  poolAddress        String   @unique
-  tokenAddress       String
-  tokenAmount        String
-  buyDigest          String
-  sellDigest         String?
-  dex                String
-  updatedAt          DateTime
-  suiSpentAmount     String
-  suiReceivedAmount  String?
-  initialPoolAmountA String
-  initialPoolAmountB String
-  suiIsA             Boolean
-  scamProbability    Float
+  id                String   @id @default(uuid())
+  tokenAddress     String
+  tokenAmount      String
+  buyDigest        String   @unique
+  sellDigest       String?
+  suiSpentAmount   String
+  suiReceivedAmount String?
+  dex              String
+  poolAddress      String?
+  amountA          String?
+  amountB          String?
+  suiIsA           Boolean  @default(false)
+  scamProbability  Float    @default(0)
+  status           String   @default("PENDING")
+  timestamp        DateTime @default(now())
+}
+
+model BacktestResult {
+  id                    String   @id @default(uuid())
+  timestamp            DateTime @default(now())
+  startTime            DateTime
+  endTime              DateTime
+  totalTrades          Int
+  successfulTrades     Int
+  failedTrades         Int
+  totalProfit          Float
+  averageProfit        Float
+  maxDrawdown          Float
+  winRate              Float
+  averageExecutionTime Float
+  scamDetectionAccuracy Float
+  gasUsed              Float
+  
+  // Additional metrics
+  profitFactor         Float?   // Total profit / Total loss
+  sharpeRatio          Float?   // Risk-adjusted return
+  maxConsecutiveLosses Int?     // Maximum consecutive losing trades
+  maxConsecutiveWins   Int?     // Maximum consecutive winning trades
+  averageWinSize       Float?   // Average profit on winning trades
+  averageLossSize      Float?   // Average loss on losing trades
+  largestWin           Float?   // Largest single winning trade
+  largestLoss          Float?   // Largest single losing trade
+  
+  // Performance metrics
+  averageLatency       Float?   // Average time to execute trades
+  maxLatency           Float?   // Maximum latency encountered
+  minLatency           Float?   // Minimum latency encountered
+  
+  // Scam detection metrics
+  truePositives        Int?     // Correctly identified scams
+  falsePositives       Int?     // Incorrectly flagged as scams
+  trueNegatives        Int?     // Correctly identified legitimate tokens
+  falseNegatives       Int?     // Missed scams
+  
+  // System metrics
+  cpuUsage             Float?   // Average CPU usage during test
+  memoryUsage          Float?   // Average memory usage during test
+  networkRequests      Int?     // Total number of network requests
+  
+  // Configuration used
+  configuration        String?  // JSON string of configuration used
+  notes                String?  // Any additional notes or observations
+}
+
+model BacktestTrade {
+  id                    String   @id @default(uuid())
+  backtestId           String   // Reference to backtest run
+  timestamp            DateTime @default(now())
+  txDigest             String
+  dex                  String
+  tokenAddress         String
+  initialPrice         Float
+  exitPrice            Float?
+  profit               Float?
+  executionTime        Float    // Time taken to execute trade
+  gasUsed              Float
+  scamProbability      Float
+  wasActuallyScam      Boolean
+  liquidityRemoved     Boolean? // Whether liquidity was later removed
+  holdingDuration      Int?     // How long the position was held (seconds)
+  priceImpact          Float?   // Price impact of the trade
+  slippage             Float?   // Actual slippage encountered
+  
+  // Error tracking
+  errors               String?  // JSON array of any errors encountered
+  warnings             String?  // JSON array of any warnings generated
+  
+  // Market conditions
+  marketVolatility     Float?   // Market volatility at time of trade
+  marketTrend          String?  // Market trend at time of trade
+  
+  @@index([backtestId])
+  @@index([txDigest])
 }

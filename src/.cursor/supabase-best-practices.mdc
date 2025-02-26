@@ -1,0 +1,9 @@
+---
+description: Best practices for using Supabase for real-time data management and authentication
+globs: **/*.{ts,tsx}
+---
+- Use Supabase's real-time capabilities for instant data updates in your algo trading app
+- Implement proper error handling and retries for robust data fetching
+- Utilize Supabase's row-level security for fine-grained access control
+- Optimize database queries for high-performance data retrieval
+- Implement secure authentication and authorization using Supabase Auth

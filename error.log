@@ -1,0 +1,227 @@
+{"cursor":{"eventSeq":"0","txDigest":"G4Rcbp7uCoFaX21MaErEaf48j1vnyACfqwP1a698Zphd"},"error":"Unexpected status code: 429","level":"error","message":"Failed to load BlueMove events","timestamp":"2025-02-24T18:10:28.771Z"}
+{"error":"Unexpected status code: 429","level":"error","message":"Failed to load historical data","timeRange":{"end":"2025-02-24T18:10:24.267Z","start":"2025-02-23T18:10:24.267Z"},"timestamp":"2025-02-24T18:10:28.772Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433556396","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:56.521Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:56.522Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433556457","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:56.583Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:56.584Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433557072","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:57.196Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:57.197Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433557164","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:57.287Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:57.288Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433557791","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:57.914Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:57.916Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433557868","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:57.994Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:57.994Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433558468","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:58.593Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:58.593Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433558606","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:58.730Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:58.730Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433559145","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:59.270Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:59.271Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433559268","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:45:59.392Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:45:59.393Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433566233","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:06.359Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:06.360Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433566294","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:06.417Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:06.418Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433566960","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:07.084Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:07.085Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433566990","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:07.112Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:07.112Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433567712","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:07.835Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:07.836Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433567711","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:07.836Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:07.837Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433568424","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:08.549Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:08.550Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433568454","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:08.577Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:08.578Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740433569116","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:09.239Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:09.240Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740433569178","level":"error","message":"Job execution failed","timestamp":"2025-02-24T21:46:09.300Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T21:46:09.301Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435166811","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:46.935Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:46.936Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435166810","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:46.937Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:46.938Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435167486","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:47.610Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:47.611Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435167532","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:47.654Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:47.654Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435168161","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:48.286Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:48.287Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435168277","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:48.402Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:48.403Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435168877","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:49.002Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:49.003Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435169016","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:49.140Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:49.141Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435169563","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:49.686Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:49.687Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435169748","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:12:49.874Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:12:49.875Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435273831","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:33.957Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:33.958Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435273878","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:34.002Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:34.003Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435274519","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:34.684Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:34.685Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435274552","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:34.687Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:34.687Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435275272","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:35.394Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:35.395Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435275271","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:35.396Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:35.397Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435275979","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:36.102Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:36.103Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435276025","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:36.152Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:36.153Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435276677","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:36.801Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:36.801Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435276708","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:36.831Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:36.831Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435284653","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:44.776Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:44.777Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435284778","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:44.902Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:44.903Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435285360","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:45.484Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:45.484Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435285514","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:45.641Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:45.644Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435286084","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:46.210Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:46.212Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435286213","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:46.337Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:46.338Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435286818","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:46.942Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:46.943Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435294304","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:54.428Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:54.428Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435294319","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:54.444Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:54.444Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435295045","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:55.168Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:55.169Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435295061","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:55.185Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:55.186Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435295771","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:55.898Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:55.900Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435295773","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:55.901Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:55.902Z"}
+{"error":"Unexpected status code: 429","jobId":"BlueMove::CreatePoolEvent-1740435296448","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:56.571Z"}
+{"error":"Unexpected status code: 429","jobType":"BlueMove::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:56.576Z"}
+{"error":"Unexpected status code: 429","jobId":"Cetus::CreatePoolEvent-1740435296494","level":"error","message":"Job execution failed","timestamp":"2025-02-24T22:14:56.618Z"}
+{"error":"Unexpected status code: 429","jobType":"Cetus::CreatePoolEvent","level":"error","message":"Event job error","timestamp":"2025-02-24T22:14:56.618Z"}
+{"critical":false,"error":"Failed to connect to SUI network: client.getLatestCheckpointSequenceNumber is not a function","level":"error","message":"Initialization error","restartCount":0,"stack":"Error: Failed to connect to SUI network: client.getLatestCheckpointSequenceNumber is not a function\n    at testConnection (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:82:11)\n    at initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:24:11)\n    at error (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:178:1)\n    at Object.<anonymous> (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:184:2)\n    at Module._compile (node:internal/modules/cjs/loader:1554:14)\n    at Object.transformer (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\node_modules\\.pnpm\\tsx@4.19.2\\node_modules\\tsx\\dist\\register-DCnOAxY2.cjs:2:1186)\n    at Module.load (node:internal/modules/cjs/loader:1289:32)\n    at Function._load (node:internal/modules/cjs/loader:1108:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)\n    at cjsLoader (node:internal/modules/esm/translators:262:5)\n    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:196:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:116:5)","timestamp":"2025-02-24T22:18:25.892Z"}
+{"critical":false,"error":"Failed to connect to SUI network: client.getLatestCheckpointSequenceNumber is not a function","level":"error","message":"Initialization error","restartCount":1,"stack":"Error: Failed to connect to SUI network: client.getLatestCheckpointSequenceNumber is not a function\n    at testConnection (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:82:11)\n    at initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:24:11)\n    at handleInitializationError (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:116:13)\n    at async initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:44:5)","timestamp":"2025-02-24T22:18:31.257Z"}
+{"critical":false,"error":"Failed to connect to SUI network: client.getLatestCheckpointSequenceNumber is not a function","level":"error","message":"Initialization error","restartCount":2,"stack":"Error: Failed to connect to SUI network: client.getLatestCheckpointSequenceNumber is not a function\n    at testConnection (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:82:11)\n    at initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:24:11)\n    at handleInitializationError (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:116:13)\n    at async initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:44:5)\n    at async handleInitializationError (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:116:7)\n    at async initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:44:5)","timestamp":"2025-02-24T22:18:42.690Z"}
+{"critical":true,"error":"Failed to connect to SUI network: client.getLatestCheckpointSequenceNumber is not a function","level":"error","message":"Initialization error","restartCount":3,"stack":"Error: Failed to connect to SUI network: client.getLatestCheckpointSequenceNumber is not a function\n    at testConnection (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:82:11)\n    at initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:24:11)\n    at handleInitializationError (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:116:13)\n    at async initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:44:5)\n    at async handleInitializationError (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:116:7)\n    at async initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:44:5)\n    at async handleInitializationError (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:116:7)\n    at async initialize (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\index.ts:44:5)","timestamp":"2025-02-24T22:19:03.222Z"}
+{"error":"\nInvalid `prisma.backtestResult.create()` invocation:\n\n{\n  data: {\n    timestamp: new Date(\"2025-02-24T23:48:21.323Z\"),\n    startTime: new Date(\"2025-02-23T23:38:54.449Z\"),\n    endTime: new Date(\"2025-02-24T23:38:54.449Z\"),\n    totalTrades: 10,\n    successfulTrades: 6,\n    failedTrades: 4,\n    totalProfit: 357.25653717202357,\n    averageProfit: 35.725653717202356,\n    winRate: 60,\n    averageExecutionTime: 49.18212999997195,\n    scamDetectionAccuracy: 0,\n    gasUsed: 0,\n    profitFactor: 6.776294220559679,\n    sharpeRatio: 0.34514238816468007,\n    maxConsecutiveLosses: 1,\n    maxConsecutiveWins: 4,\n    averageWinSize: 69.85088004114233,\n    averageLossSize: 15.462185768707611,\n    largestWin: 340.6812404047642,\n    largestLoss: -43.34363569339664,\n    averageLatency: 49.18212999997195,\n    maxLatency: 104.41599999996834,\n    minLatency: 28.229599999962375,\n    truePositives: 0,\n    falsePositives: 1,\n    trueNegatives: 9,\n    falseNegatives: 0,\n    cpuUsage: 6.796,\n    memoryUsage: 19.74486541748047,\n    networkRequests: 20,\n    configuration: \"{\\\"batchSize\\\":10,\\\"concurrentRequests\\\":3,\\\"retryAttempts\\\":3,\\\"retryDelay\\\":1000}\",\n    notes: \"Backtest durchgeführt mit optimierter Profit- und Risikoberechnung. \\n              Scam-Erkennung: TP=0, FP=1, \\n              TN=9, FN=0\",\n+   maxDrawdown: Float\n  }\n}\n\nArgument `maxDrawdown` is missing.","level":"error","message":"Failed to load historical data","timeRange":{"end":"2025-02-24T23:38:54.449Z","start":"2025-02-23T23:38:54.449Z"},"timestamp":"2025-02-24T23:48:21.409Z"}
+{"error":"\nInvalid `prisma.backtestResult.create()` invocation:\n\n{\n  data: {\n    timestamp: new Date(\"2025-02-25T00:38:47.662Z\"),\n    startTime: new Date(\"2025-02-24T00:29:23.484Z\"),\n    endTime: new Date(\"2025-02-25T00:29:23.484Z\"),\n    totalTrades: 10,\n    successfulTrades: 5,\n    failedTrades: 5,\n    totalProfit: 636.2334482097623,\n    averageProfit: 63.62334482097623,\n    winRate: 50,\n    averageExecutionTime: 48.23255000000354,\n    scamDetectionAccuracy: 0,\n    gasUsed: 0,\n    profitFactor: 5.473757956594507,\n    sharpeRatio: 0.5154959380018533,\n    maxConsecutiveLosses: 1,\n    maxConsecutiveWins: 2,\n    averageWinSize: 155.6895984619045,\n    averageLossSize: 28.44290881995203,\n    largestWin: 313.74534438630593,\n    largestLoss: -40.84032013173842,\n    averageLatency: 48.23255000000354,\n    maxLatency: 87.76939999999013,\n    minLatency: 26.656499999924563,\n    truePositives: 0,\n    falsePositives: 4,\n    trueNegatives: 6,\n    falseNegatives: 0,\n    cpuUsage: 7.062,\n    memoryUsage: 20.87647247314453,\n    networkRequests: 20,\n    configuration: \"{\\\"batchSize\\\":10,\\\"concurrentRequests\\\":3,\\\"retryAttempts\\\":3,\\\"retryDelay\\\":1000}\",\n    notes: \"Backtest durchgeführt mit optimierter Profit- und Risikoberechnung. \\n              Scam-Erkennung: TP=0, FP=4, \\n              TN=6, FN=0\",\n+   maxDrawdown: Float\n  }\n}\n\nArgument `maxDrawdown` is missing.","level":"error","message":"Failed to load historical data","timeRange":{"end":"2025-02-25T00:29:23.484Z","start":"2025-02-24T00:29:23.484Z"},"timestamp":"2025-02-25T00:38:47.716Z"}
+{"error":"Request timeout","level":"error","message":"Kritischer Fehler","timestamp":"2025-02-25T15:59:07.395Z"}
+{"error":"Request timeout","level":"error","message":"❌ Test fehlgeschlagen","timestamp":"2025-02-25T16:48:34.934Z"}
+{"error":"Request timeout","level":"error","message":"❌ Test fehlgeschlagen","stack":"Error: Request timeout\n    at Timeout._onTimeout (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\chain\\config.ts:135:35)\n    at listOnTimeout (node:internal/timers:594:17)\n    at process.processTimers (node:internal/timers:529:7)","timestamp":"2025-02-25T16:50:04.035Z"}
+{"error":"Request timeout","level":"error","message":"❌ Test fehlgeschlagen","stack":"Error: Request timeout\n    at Timeout._onTimeout (C:\\Users\\chanc\\OneDrive2\\OneDrive\\Python_Projects\\sui-liquidity-sniper\\src\\chain\\config.ts:149:35)\n    at listOnTimeout (node:internal/timers:594:17)\n    at process.processTimers (node:internal/timers:529:7)","timestamp":"2025-02-25T16:51:21.504Z"}
+{"error":"Request timeout","level":"error","message":"Kritischer Fehler","timestamp":"2025-02-25T17:03:25.515Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:07:40.094Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:07:46.606Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:07:52.442Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:07:58.817Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:04.621Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:10.939Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:16.723Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:22.851Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:28.657Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:34.753Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:40.523Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:46.731Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:08:52.474Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:12:56.628Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:03.080Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:08.871Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:15.083Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:20.840Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:26.963Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:32.745Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:38.960Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:44.781Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:50.837Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:13:56.613Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:02.958Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:08.737Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:14.817Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:20.584Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:26.721Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:32.485Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:38.695Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:44.514Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:50.624Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:14:56.491Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:02.594Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:08.344Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:14.605Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:20.422Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:26.612Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:32.377Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:38.497Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:44.247Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:50.538Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:15:56.318Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:02.558Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:08.318Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:14.559Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:20.344Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:26.413Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:32.237Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:38.371Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:44.250Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:50.580Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:16:56.360Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:02.454Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:08.254Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:14.543Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:20.381Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:26.613Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:32.374Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:39.232Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:45.006Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:51.199Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:17:57.046Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:03.297Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:09.048Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:15.273Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:21.047Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:27.227Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:32.993Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:39.135Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:44.902Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:50.988Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:18:56.752Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:03.083Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:08.820Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:14.966Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:20.764Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:27.092Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:32.876Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:38.981Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:44.744Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:50.847Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:19:56.623Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:02.734Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:08.514Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:14.589Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:20.429Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:26.602Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:32.386Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:38.844Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:44.589Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:50.786Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:20:56.550Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:21:02.646Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:25:11.008Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:25:17.307Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:25:23.101Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:25:29.221Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:25:34.994Z"}
+{"error":"Invalid params","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:25:41.104Z"}
+{"error":"fetch failed","level":"error","message":"Fehler beim Polling","timestamp":"2025-02-25T17:25:46.873Z"}
+{"level":"error","message":"Kein Standard-Wallet gefunden. Bitte erstellen Sie zuerst ein Wallet.","timestamp":"2025-02-25T17:27:36.508Z"}
+{"level":"error","message":"Kein Standard-Wallet gefunden. Bitte erstellen Sie zuerst ein Wallet.","timestamp":"2025-02-25T17:39:18.418Z"}

@@ -1,11 +1,11 @@
-import { getSwapData } from "./agg";
-import { getTransactionInfo } from "../chain/extractor";
-import { SUPPORTED_DEX, SUI } from "../chain/config";
-import { buy as buyDirectCetus } from "./dex/cetus";
-import { buyAction } from "./tradeStrategy";
-import { checkIsHoneyPot } from "./checkIsHoneyPot";
-import { checkIsBlackListed } from "./checkscam";
-import { Assets, Operation, Congestion } from '../types'; // Adjust the import path and types as needed
+import { getSwapData } from "./agg.js";
+import { getTransactionInfo, ParsedPoolData } from "../chain/extractor.js";
+import { SUPPORTED_DEX, SUI } from "../chain/config.js";
+import { buy as buyDirectCetus } from "./dex/cetus.js";
+import { buyAction } from "./tradeStrategy.js";
+import { checkIsHoneyPot } from "./checkIsHoneyPot.js";
+import { checkIsBlackListed } from "./checkscam.js";
+import { Assets, Operation, Congestion } from '../types.js'; // Adjust the import path and types as needed
 
 // Gas-Optimierung basierend auf Reference Gas Price
 const calculateGasForMysticeti = async () => {
@@ -123,55 +123,77 @@ async function tryAgg(_coinIn: string, _coinOut: string, amount: string) {
 }
 
 export async function trade(digest: string, dex: SUPPORTED_DEX = 'Cetus') {
-  const info = await getTransactionInfo(digest, dex)
+  try {
+    // Parallele Ausführung der Transaktionsinfo-Abfrage und Gas-Berechnung
+    const [info, optimalGas] = await Promise.all([
+      getTransactionInfo(digest, dex),
+      calculateGasForMysticeti()
+    ]);
+    
+    if (!info || !info.coinA || !info.coinB || !info.amountA || !info.amountB || !info.poolId) {
+      console.error("Unvollständige Pool-Daten:", info);
+      return;
+    }
+    
+    // Erstelle ein vollständiges ParsedPoolData-Objekt
+    const poolData: ParsedPoolData = {
+      coinA: info.coinA,
+      coinB: info.coinB,
+      amountA: info.amountA,
+      amountB: info.amountB,
+      poolId: info.poolId,
+      liquidity: '0', // Standardwert für Liquidität
+      dex: dex // Setze den DEX-Typ explizit
+    };
+    
+    const _coinIn = "0x2::sui::SUI";
+    const _coinOut = poolData.coinB;
+    const amount = BigInt(1 * 1e9); // 1 SUI
+    const a2b = true;
+    
+    // Schnelle Vorfilterung basierend auf Mindestliquidität
+    const minLiquiditySUI = 300; // Mindestliquidität in SUI
+    const liquiditySUI = Number(poolData[a2b ? 'amountA' : 'amountB']) / Math.pow(10, 9);
+    
+    if (liquiditySUI < minLiquiditySUI) {
+      console.log(`Pool zu klein: ${liquiditySUI.toFixed(2)} SUI < ${minLiquiditySUI} SUI`);
+      return;
+    }
 
-  if (!info) return null;
+    let txId: string = '';
 
-  const a2b = info.coinA.endsWith("::sui::SUI") === true;
-  const amount = 0.05 * Math.pow(10, 9)
-
-  const _coinIn = a2b ? info.coinA : info.coinB
-  const _coinOut = a2b ? info.coinB : info.coinA
-
-  if (_coinIn.endsWith("::sui::SUI") === false) {
-    console.log("Pool requires SUI")
-    return null
-  }
-
-  const isHoneyPot = await checkIsHoneyPot(_coinOut)
-
-  if (isHoneyPot) {
-    console.log("Honey pot detected")
-    return null
-  }
-
-  if(checkIsBlackListed(_coinOut)) {
-    console.log("Blacklisted token")
-    return null
-  }
-
-  let txId: string | null = null
-
-  console.log("BUYING, START TRADE::", _coinIn, _coinOut, amount)
-  if (Number(info[a2b ? 'amountA' : 'amountB']) / Math.pow(10, 9) >= 300) {
+    console.log("BUYING, START TRADE::", _coinIn, _coinOut, amount);
+    
+    // Optimierte DEX-spezifische Handelslogik
     switch (dex) {
       case 'Cetus':
-        txId = await buyDirectCetus(info)
-        await buyAction(txId, info)
+        // Direkter Kauf über Cetus
+        const cetusTxId = await buyDirectCetus(poolData);
+        txId = typeof cetusTxId === 'string' ? cetusTxId : '';
+        if (txId) {
+          // Kauf-Aktion ausführen
+          await buyAction(txId, poolData);
+        }
         break;
 
       case 'BlueMove':
-        txId = await tryAgg("0x2::sui::SUI", _coinOut, amount.toString())
-        await buyAction(txId as string, info)
-        break
+        // Optimierter Kauf über Aggregator
+        const bluemoveTxId = await tryAgg("0x2::sui::SUI", _coinOut, amount.toString());
+        txId = typeof bluemoveTxId === 'string' ? bluemoveTxId : '';
+        if (txId) {
+          await buyAction(txId, poolData);
+        }
+        break;
 
       default:
+        console.log(`Nicht unterstützter DEX: ${dex}`);
         break;
     }
-  } else {
-    console.log("Pool too small")
+  } catch (error) {
+    console.error("Trade-Fehler:", error);
   }
 }
+
 function lockInTunnel(assets: any) {
   throw new Error("Function not implemented.");
 }

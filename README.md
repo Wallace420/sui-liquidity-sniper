@@ -1,8 +1,92 @@
-# SUI liquidity sniper
+# SUI Liquidity Sniper
 
-The bot monitors the creation of new pools. Once a pool is created, the bot automatically makes a purchase, logs the trade in the database, and starts a trading process that tracks the token's price fluctuations. When the desired profit is reached, or if the stop-loss rule is triggered, it automatically sells as well.
+Ein leistungsstarkes Tool zum Snipen von Liquiditätspools auf der SUI-Blockchain.
 
-All actions will be sent on telegram chat by your bot.
+## Funktionen
+
+- **Verbesserte Terminal-Ausgabe**: Klare und strukturierte Anzeige aller wichtigen Informationen
+- **Echtzeit-Überwachung**: Automatische Erkennung neuer Pools und Benachrichtigungen
+- **Fortschrittliche Filterung**: Intelligente Filterung von Pools basierend auf Risiko-Score, Liquidität und Honeypot-Erkennung
+- **Benutzerfreundliche Befehle**: Einfache Befehle und Schnellzugriffstasten für alle Aktionen
+- **Detaillierte Pool-Informationen**: Umfassende Informationen zu jedem Pool, einschließlich Social-Media-Links und Metriken
+- **Automatischer Modus**: Automatisches Snipen von Pools, die den Filterkriterien entsprechen
+
+## Installation
+
+```bash
+# Klone das Repository
+git clone https://github.com/yourusername/sui-liquidity-sniper.git
+
+# Wechsle in das Verzeichnis
+cd sui-liquidity-sniper
+
+# Installiere die Abhängigkeiten
+npm install
+
+# Starte die Anwendung
+npm run cli
+```
+
+## Befehle und Schnellzugriffstasten
+
+| Befehl | Schnelltaste | Beschreibung |
+|--------|--------------|--------------|
+| `help` | `h` | Zeigt die Hilfe an |
+| `clear` | `c` | Löscht den Bildschirm |
+| `status` | `s` | Zeigt den aktuellen Status an |
+| `pools` | `p` | Zeigt alle aktiven Pools an |
+| `details <poolId>` | - | Zeigt Details zu einem Pool an |
+| `buy <poolId> <amount>` | - | Kauft Token aus einem Pool |
+| `sell <poolId> <amount>` | - | Verkauft Token aus einem Pool |
+| `auto on` | `a` | Schaltet den Auto-Modus ein |
+| `auto off` | `x` | Schaltet den Auto-Modus aus |
+| `risk` | `r` | Zeigt Risikoanalyse für alle Pools |
+| `filter` | `f` | Zeigt und ändert Filtereinstellungen |
+| `quickbuy` | `qb` | Kauft automatisch den besten Pool |
+| `quicksell` | `qs` | Verkauft alle gekauften Token |
+| `wallet` | `w` | Zeigt Wallet-Informationen |
+| `scan` | - | Scannt aktiv nach neuen Pools |
+| `monitor <on|off>` | - | Schaltet Pool-Überwachung ein/aus |
+| `exit` | `q` | Beendet das Programm |
+
+## Parameter
+
+- `minliquidity` - Minimale Liquidität in SUI
+- `maxrisk` - Maximaler Risiko-Score (0-100)
+- `size` - Positionsgröße in SUI
+- `takeprofit` - Take-Profit in Prozent
+- `stoploss` - Stop-Loss in Prozent
+- `trailingstop` - Trailing-Stop aktivieren/deaktivieren (on/off)
+- `trailingdistance` - Trailing-Distanz in Prozent
+
+## Verbesserte Terminal-Ausgabe
+
+Die Terminal-Ausgabe wurde vollständig überarbeitet, um eine bessere Übersicht und Benutzerfreundlichkeit zu gewährleisten:
+
+1. **Strukturierte Anzeige**: Alle Informationen werden in klar strukturierten Tabellen und Boxen angezeigt
+2. **Farbkodierung**: Wichtige Informationen werden farblich hervorgehoben
+3. **Detaillierte Pool-Informationen**: Umfassende Informationen zu jedem Pool, einschließlich:
+   - Token-Informationen (Name, Symbol, Adresse)
+   - Liquiditätsinformationen
+   - Risiko-Metriken (Scam-Wahrscheinlichkeit, Honeypot-Erkennung)
+   - Social-Media-Links
+   - Handelsstatistiken
+4. **Echtzeit-Benachrichtigungen**: Sofortige Benachrichtigungen bei neuen Pools
+5. **Benutzerfreundliche Eingabe**: Verbesserte Eingabeaufforderung mit Befehlshistorie und Schnellzugriffstasten
+
+## Schnellzugriff auf wichtige Funktionen
+
+Mit den neuen Schnellzugriffstasten können Sie sofort auf die wichtigsten Funktionen zugreifen:
+
+1. **Risikoanalyse (r)**: Zeigt eine detaillierte Risikoanalyse aller aktiven Pools mit farblicher Hervorhebung
+2. **Filtereinstellungen (f)**: Zeigt die aktuellen Filtereinstellungen und ermöglicht deren schnelle Änderung
+3. **Schnellkauf (qb)**: Kauft automatisch den besten verfügbaren Pool basierend auf Risiko und Liquidität
+4. **Schnellverkauf (qs)**: Verkauft alle gekauften Token mit einem Befehl
+5. **Wallet-Informationen (w)**: Zeigt alle wichtigen Informationen zu Ihrer Wallet auf einen Blick
+
+## Lizenz
+
+MIT
 
 
 ## Screenshots
@@ -112,8 +196,7 @@ Because tokens listed on Turbos, Bluefi, FlowX considerably less than in the oth
 Due to the prevalence of scam bots, they often create a token, provide liquidity, and then remove it as soon as users start buying the token, leaving buyers at a loss.
 
 
-<<<<<<< HEAD
-### Upcoming Features
+## Upcoming Features
 
 ### Performance-Optimierungen
 Integration von Mysticeti V2, das schnellere Transaktionsverarbeitung ermöglicht6
@@ -144,6 +227,4 @@ Verbesserung der Multi-Wallet-Verwaltung für bis zu 40 Wallets1
 Implementierung verbesserter Backup- und Sicherheitsprotokolle8
 
 Diese Updates werden schrittweise implementiert werden, um die Stabilität des Bots zu gewährleisten und von den neuen SUI-Blockchain-Funktionen optimal zu profitieren.
-=======
->>>>>>> 7a653ef1dec3964b3d647b498c1e2b654d4b5177
 

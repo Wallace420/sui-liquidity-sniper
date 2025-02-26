@@ -1,0 +1,9 @@
+---
+description: Best practices for using WebSockets in real-time applications
+globs: **/*.{ts,js}
+---
+- Use secure WebSocket connections (wss://) for production
+- Implement proper error handling and reconnection logic
+- Use message serialization (e.g., JSON) for data exchange
+- Implement proper authentication and authorization for WebSocket connections
+- Use WebSocket compression for improved performance

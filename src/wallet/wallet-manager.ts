@@ -5,6 +5,8 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import { config } from 'dotenv';
 import { EventEmitter } from 'events';
+import { fromB64 } from '@mysten/sui/utils';
+import { logInfo, logError } from '../utils/logger.js';
 
 // Load environment variables from .env file
 config();
@@ -22,6 +24,8 @@ export class WalletManager extends EventEmitter {
     private wallets: Map<string, WalletData> = new Map();
     private client: SuiClient;
     private keypair: Ed25519Keypair | null = null;
+    private defaultWallet: string | null = null;
+    private rl: readline.Interface | null = null;
     
     constructor() {
         super();
@@ -29,8 +33,21 @@ export class WalletManager extends EventEmitter {
         this.client = new SuiClient({ url: rpcUrl });
     }
 
+    // Hilfsfunktion für Benutzereingaben
+    private async question(prompt: string): Promise<string> {
+        if (!this.rl) {
+            throw new Error('Readline Interface nicht initialisiert');
+        }
+        return new Promise((resolve) => {
+            this.rl!.question(prompt, (answer) => {
+                resolve(answer);
+            });
+        });
+    }
+
     // Wallet-Datei verschlüsselt speichern
-    private encryptAndSave(data: string, password: string): void {
+    private async encryptAndSave(data: string): Promise<void> {
+        const password = await this.question('Bitte Passwort für Wallet-Verschlüsselung eingeben: ');
         const algorithm = 'aes-256-cbc';
         const key = crypto.scryptSync(password, 'salt', 32);
         const iv = crypto.randomBytes(16);
@@ -42,6 +59,7 @@ export class WalletManager extends EventEmitter {
             iv: iv.toString('hex'),
             encrypted: encrypted
         }));
+        console.log('Wallets erfolgreich gespeichert.');
     }
 
     // Wallet-Datei entschlüsseln und laden
@@ -105,43 +123,48 @@ export class WalletManager extends EventEmitter {
     }
 
     // Bestehendes Wallet importieren
-    private importExistingWallet(name: string, privateKey: string): void {
+    async importExistingWallet(name: string, privateKeyString: string): Promise<void> {
         try {
-            const keypair = Ed25519Keypair.fromSecretKey(Buffer.from(privateKey, 'hex'));
-            const publicKey = keypair.getPublicKey().toBase64();
-            const address = keypair.getPublicKey().toSuiAddress();
+            // Entferne eventuelles "0x" Präfix und Whitespace
+            privateKeyString = privateKeyString.replace('0x', '').trim();
+            
+            // Entferne "suiprivkey" Präfix wenn vorhanden
+            if (privateKeyString.startsWith('suiprivkey')) {
+                privateKeyString = privateKeyString.replace('suiprivkey', '');
+            }
 
+            // Konvertiere Base64 zu Bytes
+            const privateKeyBytes = fromB64(privateKeyString);
+            
+            // Erstelle Keypair
+            const keypair = Ed25519Keypair.fromSecretKey(privateKeyBytes);
+            
+            // Speichere Wallet
             this.wallets.set(name, {
                 keypair,
-                privateKey,
-                publicKey,
-                address,
+                privateKey: privateKeyString,
+                publicKey: keypair.getPublicKey().toBase64(),
+                address: keypair.getPublicKey().toSuiAddress(),
                 type: 'standard'
             });
+            this.defaultWallet = name;
 
-            console.log(`Wallet "${name}" erfolgreich importiert:`);
-            console.log(`Adresse: ${address}`);
-            this.saveWallets();
-            this.emit('walletSetupComplete');
+            logInfo('Wallet erfolgreich importiert', {
+                name,
+                address: keypair.getPublicKey().toSuiAddress()
+            });
         } catch (error) {
-            console.error('Fehler beim Import des Wallets:', error);
+            logError('Fehler beim Import des Wallets', {
+                error: error instanceof Error ? error.message : 'Unbekannter Fehler'
+            });
+            throw error;
         }
     }
 
     // Wallets speichern
     private saveWallets(): void {
         const walletsObject = Object.fromEntries(this.wallets);
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-            terminal: false
-        });
-
-        rl.question('Bitte Passwort für Wallet-Verschlüsselung eingeben: ', (password) => {
-            this.encryptAndSave(JSON.stringify(walletsObject), password);
-            rl.close();
-            console.log('Wallets erfolgreich gespeichert.');
-        });
+        this.encryptAndSave(JSON.stringify(walletsObject));
     }
 
     // Neue Methoden für Phantom und Backpack
@@ -189,12 +212,10 @@ export class WalletManager extends EventEmitter {
     }
 
     // Hauptmenü anzeigen
-    public showMainMenu(): void {
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-            terminal: false
-        });
+    public async showMainMenu(): Promise<void> {
+        if (!this.rl) {
+            throw new Error('Readline Interface nicht initialisiert');
+        }
 
         console.log('\n=== Wallet Manager ===');
         console.log('1. Neues Wallet erstellen');
@@ -204,74 +225,55 @@ export class WalletManager extends EventEmitter {
         console.log('5. Alle Wallets anzeigen');
         console.log('6. Beenden');
 
-        rl.question('Bitte wählen Sie eine Option (1-6): ', (answer) => {
-            switch (answer) {
-                case '1':
-                    this.showCreateWalletMenu();
-                    rl.close();
-                    break;
+        const answer = await this.question('Bitte wählen Sie eine Option (1-6): ');
+        
+        switch (answer) {
+            case '1':
+                await this.showCreateWalletMenu();
+                break;
 
-                case '2':
-                    rl.question('Name für das zu importierende Wallet: ', (name) => {
-                        rl.question('Private Key: ', (privateKey) => {
-                            this.importExistingWallet(name, privateKey);
-                            rl.close();
-                            this.showMainMenu();
-                        });
-                    });
-                    break;
+            case '2':
+                const name = await this.question('Name für das zu importierende Wallet: ');
+                const privateKey = await this.question('Private Key: ');
+                await this.importExistingWallet(name, privateKey);
+                break;
 
-                case '3':
-                    rl.question('Name für das Phantom Wallet: ', (name) => {
-                        this.connectPhantomWallet(name).then(() => {
-                            rl.close();
-                            this.showMainMenu();
-                        });
-                    });
-                    break;
+            case '3':
+                const phantomName = await this.question('Name für das Phantom Wallet: ');
+                await this.connectPhantomWallet(phantomName);
+                break;
 
-                case '4':
-                    rl.question('Name für das Backpack Wallet: ', (name) => {
-                        this.connectBackpackWallet(name).then(() => {
-                            rl.close();
-                            this.showMainMenu();
-                        });
-                    });
-                    break;
+            case '4':
+                const backpackName = await this.question('Name für das Backpack Wallet: ');
+                await this.connectBackpackWallet(backpackName);
+                break;
 
-                case '5':
-                    console.log('\nVerfügbare Wallets:');
-                    this.wallets.forEach((wallet, name) => {
-                        console.log(`\nName: ${name}`);
-                        console.log(`Typ: ${wallet.type}`);
-                        console.log(`Adresse: ${wallet.address}`);
-                    });
-                    rl.close();
-                    this.showMainMenu();
-                    break;
+            case '5':
+                console.log('\nVerfügbare Wallets:');
+                this.wallets.forEach((wallet, name) => {
+                    console.log(`\nName: ${name}`);
+                    console.log(`Typ: ${wallet.type}`);
+                    console.log(`Adresse: ${wallet.address}`);
+                });
+                await this.showMainMenu();
+                break;
 
-                case '6':
-                    console.log('Programm wird beendet...');
-                    rl.close();
-                    process.exit(0);
-                    break;
+            case '6':
+                console.log('Zurück zum Hauptmenü...');
+                return;
 
-                default:
-                    console.log('Ungültige Eingabe');
-                    rl.close();
-                    this.showMainMenu();
-                    break;
-            }
-        });
+            default:
+                console.log('Ungültige Eingabe');
+                await this.showMainMenu();
+                break;
+        }
     }
 
     // Menü zum Erstellen eines neuen Wallets anzeigen
-    private showCreateWalletMenu(): void {
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-            terminal: false
-        });
+    private async showCreateWalletMenu(): Promise<void> {
+        if (!this.rl) {
+            throw new Error('Readline Interface nicht initialisiert');
+        }
 
         console.log('\n=== Neues Wallet erstellen ===');
         console.log('1. Standard Wallet');
@@ -279,47 +281,38 @@ export class WalletManager extends EventEmitter {
         console.log('3. Backpack Wallet');
         console.log('4. Zurück zum Hauptmenü');
 
-        rl.question('Bitte wählen Sie eine Option (1-4): ', (answer) => {
-            switch (answer) {
-                case '1':
-                    rl.question('Name für das neue Standard Wallet: ', (name) => {
-                        this.createNewWallet(name, 'standard').then(() => {
-                            rl.close();
-                            this.showMainMenu();
-                        });
-                    });
-                    break;
+        const answer = await this.question('Bitte wählen Sie eine Option (1-4): ');
+        
+        switch (answer) {
+            case '1':
+                const name = await this.question('Name für das neue Standard Wallet: ');
+                await this.createNewWallet(name, 'standard');
+                break;
 
-                case '2':
-                    rl.question('Name für das neue Phantom Wallet: ', (name) => {
-                        this.createNewWallet(name, 'phantom').then(() => {
-                            rl.close();
-                            this.showMainMenu();
-                        });
-                    });
-                    break;
+            case '2':
+                const phantomName = await this.question('Name für das neue Phantom Wallet: ');
+                await this.createNewWallet(phantomName, 'phantom');
+                break;
 
-                case '3':
-                    rl.question('Name für das neue Backpack Wallet: ', (name) => {
-                        this.createNewWallet(name, 'backpack').then(() => {
-                            rl.close();
-                            this.showMainMenu();
-                        });
-                    });
-                    break;
+            case '3':
+                const backpackName = await this.question('Name für das neue Backpack Wallet: ');
+                await this.createNewWallet(backpackName, 'backpack');
+                break;
 
-                case '4':
-                    rl.close();
-                    this.showMainMenu();
-                    break;
+            case '4':
+                await this.showMainMenu();
+                break;
 
-                default:
-                    console.log('Ungültige Eingabe');
-                    rl.close();
-                    this.showCreateWalletMenu();
-                    break;
-            }
-        });
+            default:
+                console.log('Ungültige Eingabe');
+                await this.showCreateWalletMenu();
+                break;
+        }
+    }
+
+    // Setze das Readline Interface
+    public setReadlineInterface(rl: readline.Interface) {
+        this.rl = rl;
     }
 
     // Methode zum Abrufen des Standard-Wallets
@@ -328,6 +321,5 @@ export class WalletManager extends EventEmitter {
     }
 }
 
-// Wallet Manager initialisieren und starten
-const walletManager = new WalletManager();
-walletManager.showMainMenu();
+// Exportiere die WalletManager-Klasse als default export
+export default WalletManager;

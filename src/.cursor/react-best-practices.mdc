@@ -1,0 +1,9 @@
+---
+description: Best practices for building React applications
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Use functional components with hooks instead of class components
+- Implement proper state management using Context API or Redux
+- Use memoization techniques like `useMemo` and `useCallback` for performance optimization
+- Implement proper error boundaries to handle component errors
+- Use prop-types or TypeScript for type checking and documentation

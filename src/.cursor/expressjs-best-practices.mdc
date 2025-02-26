@@ -1,0 +1,9 @@
+---
+description: Best practices for building Express.js applications
+globs: **/*.{ts,js}
+---
+- Use middleware for common tasks like authentication and logging
+- Implement proper error handling with error middleware
+- Use route parameters and query parameters for flexible routing
+- Implement proper CORS configuration for API security
+- Use environment variables for configuration management

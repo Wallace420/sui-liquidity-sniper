@@ -1,0 +1,9 @@
+---
+description: Best practices for building Node.js applications
+globs: **/*.{ts,js}
+---
+- Use async/await for handling asynchronous operations
+- Implement proper error handling and logging
+- Use environment variables for configuration management
+- Implement proper security measures like input validation and sanitization
+- Use a linter and formatter for consistent code style

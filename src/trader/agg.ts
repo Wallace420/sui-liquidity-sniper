@@ -1,5 +1,5 @@
 import { getQuote, buildTx } from "@7kprotocol/sdk-ts";
-import { SUI } from "../chain/config";
+import { SUI } from "../chain/config.js";
 
 const getSwapData = async (tokenIn: string, tokenOut: string, amountIn: string) => {
   const correctTokenIn = tokenIn.startsWith("0x") ? tokenIn : `0x${tokenIn}`
