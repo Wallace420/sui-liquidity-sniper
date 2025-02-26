@@ -1,8 +1,8 @@
-import { SUI } from "../chain/config";
-import { getCetusPools } from "../trader/dex/cetus";
+import { SUI } from "../chain/config.js";
+import { getCetusPools } from "../trader/dex/cetus.js";
 import { Pool } from "@cetusprotocol/cetus-sui-clmm-sdk";
 import pLimit from "p-limit";
-import { scamProbability } from "../trader/checkscam";
+import { scamProbability } from "../trader/checkscam.js";
 
 // Configuration
 const PARALLEL_REQUESTS = 5;
@@ -11,12 +11,12 @@ const MIN_LIQUIDITY_THRESHOLD = 1000; // Minimum liquidity in SUI
 const MAX_POOL_AGE = 3600; // 1 hour in seconds
 
 // Pool tracking
-const knownPools = new Set<string>();
+const knownPools = new Set<string>(); 
 const poolMetadata = new Map<string, {
-  firstSeen: number;
-  liquidityHistory: number[];
-  riskScore: number;
-}>>();
+  firstSeen: number,
+  liquidityHistory: number[],
+  riskScore: number
+}>();
 
 // Rate limiting
 const limit = pLimit(PARALLEL_REQUESTS);

@@ -1,0 +1,25 @@
+---
+description: Best practices for using Shadcn UI components in your application
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Utilize Shadcn UI's pre-built components for consistency and efficiency
+- Customize components using the provided utility classes and props
+- Ensure proper accessibility by following Shadcn UI's guidelines
+- Optimize component performance by minimizing unnecessary re-renders
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

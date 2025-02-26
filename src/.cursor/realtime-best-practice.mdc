@@ -1,0 +1,9 @@
+---
+description: Best practices for optimizing real-time performance in algo trading applications globs:
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Utilize WebSockets for low-latency, real-time data streaming
+- Implement efficient data structures and algorithms for quick analysis
+- Use memoization and caching techniques to minimize redundant computations
+- Optimize database queries and indexing for fast data retrieval
+- Implement proper load balancing and scaling strategies for high-traffic scenarios

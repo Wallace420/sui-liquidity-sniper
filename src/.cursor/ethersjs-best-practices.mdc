@@ -1,0 +1,9 @@
+---
+description: Best practices for using Ethers.js in Web3 applications
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Use `ethers.providers.JsonRpcProvider` for connecting to Ethereum nodes
+- Implement proper error handling with `try-catch` blocks
+- Utilize `ethers.utils` for common Web3 utility functions
+- Use `ethers.Contract` for interacting with smart contracts
+- Implement gas optimization techniques when sending transactions

@@ -1,0 +1,165 @@
+import { SuiClient } from '@mysten/sui/client';
+import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
+import pLimit from 'p-limit';
+import * as dotenv from 'dotenv';
+import { env } from 'process';
+import { initCetusSDK } from '@cetusprotocol/cetus-sui-clmm-sdk';
+// Lade Umgebungsvariablen (Mainnet)
+dotenv.config({ path: '.env' });
+// Konstante für den BlueMove Migrator/Pump Adresse
+export const MIGRATOR_MOVE_PUMP = env.MIGRATOR_MOVE_PUMP || '0x5a7eca40df453efe6bb1c3e1a6f5dc3152d7f2a2';
+// Rate Limiting Konfiguration - Optimiert für Mainnet Performance
+const RATE_LIMIT = {
+    maxRequests: Number(env.RATE_LIMIT_MAX_REQUESTS) || 50,
+    windowMs: Number(env.RATE_LIMIT_WINDOW_MS) || 1000,
+    retryDelayMs: Number(env.RATE_LIMIT_RETRY_DELAY_MS) || 200,
+    concurrentRequests: Number(env.CONCURRENT_REQUESTS) || 3,
+    requestTimeoutMs: Number(env.REQUEST_TIMEOUT_MS) || 15000,
+    wsTimeoutMs: 120000,
+    maxRetries: Number(env.MAX_RETRIES) || 3,
+    batchSize: Number(env.BATCH_SIZE) || 10
+};
+// RPC Node URLs mit Load Balancing
+const RPC_NODES = [
+    env.SUI_NODE_URL,
+    env.SUI_NODE_URL_BACKUP_1,
+    env.SUI_NODE_URL_BACKUP_2,
+    env.SUI_NODE_URL_BACKUP_3
+].filter(Boolean);
+// Performance Cache
+const CACHE_CONFIG = {
+    enabled: env.CACHE_ENABLED === 'true',
+    ttl: Number(env.CACHE_TTL) || 60000
+};
+// Trading Limits
+const TRADING_LIMITS = {
+    maxTradeAmount: Number(env.MAX_TRADE_AMOUNT) || 5,
+    minTradeAmount: Number(env.MIN_TRADE_AMOUNT) || 0.1,
+    maxSlippage: Number(env.MAX_SLIPPAGE) || 1.0,
+    minLiquidity: Number(env.MIN_LIQUIDITY) || 100,
+    maxPriceImpact: Number(env.MAX_PRICE_IMPACT) || 2.0
+};
+// Debug: Zeige Konfiguration
+console.log('Konfiguration:', {
+    nodes: RPC_NODES,
+    rateLimits: RATE_LIMIT,
+    cache: CACHE_CONFIG,
+    tradingLimits: TRADING_LIMITS,
+    env: env.NETWORK_ENV
+});
+// Rate Limiting und Load Balancing
+let currentNodeIndex = 0;
+let requestsInWindow = 0;
+let windowStart = Date.now();
+const limit = pLimit(RATE_LIMIT.concurrentRequests);
+// Request Cache
+const requestCache = new Map();
+// Basis-Client
+const baseClient = new SuiClient({ url: RPC_NODES[0] });
+// Initialisiere Cetus SDK mit der offiziellen Methode
+const cetusSDK = initCetusSDK({
+    network: env.NETWORK_ENV || 'mainnet',
+    fullNodeUrl: RPC_NODES[0],
+    // Wallet wird später gesetzt
+});
+// Proxy für Rate-Limiting und Load Balancing
+export const SUI = {
+    client: new Proxy(baseClient, {
+        get(target, prop) {
+            const value = target[prop];
+            if (typeof value === 'function') {
+                return async (...args) => {
+                    return limit(async () => {
+                        return withRetry(async () => {
+                            // Cache-Check für normale Anfragen
+                            if (CACHE_CONFIG.enabled) {
+                                const cacheKey = `${String(prop)}-${JSON.stringify(args)}`;
+                                const cached = requestCache.get(cacheKey);
+                                if (cached && Date.now() - cached.timestamp < CACHE_CONFIG.ttl) {
+                                    return cached.data;
+                                }
+                            }
+                            const client = new SuiClient({ url: getNextNode() });
+                            const result = await client[prop](...args);
+                            // Cache-Update
+                            if (CACHE_CONFIG.enabled) {
+                                const cacheKey = `${String(prop)}-${JSON.stringify(args)}`;
+                                requestCache.set(cacheKey, {
+                                    data: result,
+                                    timestamp: Date.now()
+                                });
+                            }
+                            return result;
+                        });
+                    });
+                };
+            }
+            return value;
+        }
+    }),
+    signer: new Ed25519Keypair(), // Wird später mit dem richtigen Schlüssel initialisiert
+    cetusClmmSDK: cetusSDK // Verwende die initialisierte SDK-Instanz
+};
+// Helper Funktionen
+function getNextNode() {
+    const now = Date.now();
+    if (now - windowStart >= RATE_LIMIT.windowMs) {
+        requestsInWindow = 0;
+        windowStart = now;
+    }
+    if (requestsInWindow >= RATE_LIMIT.maxRequests) {
+        currentNodeIndex = (currentNodeIndex + 1) % RPC_NODES.length;
+        requestsInWindow = 0;
+    }
+    requestsInWindow++;
+    return RPC_NODES[currentNodeIndex];
+}
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+async function withRetry(operation, retries = RATE_LIMIT.maxRetries) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await Promise.race([
+                operation(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), RATE_LIMIT.requestTimeoutMs))
+            ]);
+        }
+        catch (error) {
+            if (i === retries - 1)
+                throw error;
+            const delay = RATE_LIMIT.retryDelayMs * Math.pow(2, i);
+            await wait(delay);
+            currentNodeIndex = (currentNodeIndex + 1) % RPC_NODES.length;
+        }
+    }
+    throw new Error('All retries failed');
+}
+// Cache Cleanup
+setInterval(() => {
+    if (CACHE_CONFIG.enabled) {
+        const now = Date.now();
+        for (const [key, value] of requestCache.entries()) {
+            if (now - value.timestamp > CACHE_CONFIG.ttl) {
+                requestCache.delete(key);
+            }
+        }
+    }
+}, CACHE_CONFIG.ttl);
+// Test RPC-Verbindung
+(async () => {
+    try {
+        const version = await SUI.client.getLatestCheckpointSequenceNumber();
+        console.log('🟢 RPC Verbindung erfolgreich:', {
+            network: env.NETWORK_ENV,
+            nodeUrl: RPC_NODES[currentNodeIndex],
+            latestCheckpoint: version
+        });
+    }
+    catch (error) {
+        console.error('🔴 RPC Verbindungsfehler:', {
+            network: env.NETWORK_ENV,
+            nodeUrl: RPC_NODES[currentNodeIndex],
+            error: error instanceof Error ? error.message : 'Unbekannter Fehler'
+        });
+    }
+})();
+//# sourceMappingURL=config.js.map

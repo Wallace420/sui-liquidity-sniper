@@ -1,0 +1,356 @@
+import { SuiClient } from '@mysten/sui/client';
+import * as readline from 'readline';
+import { WalletManager } from './wallet/wallet-manager.js';
+import { logError, logInfo } from './utils/logger.js';
+import { SUI } from './chain/config.js';
+import { decomposeTransactionByDex, decomposeEventData } from './chain/extractor.js';
+import { scamProbability } from './trader/checkscam.js';
+import * as fs from 'fs';
+import * as path from 'path';
+import { ParsedPoolData } from './chain/extractor.js';
+
+// Globale Variablen
+let isTradingEnabled = false;
+let isPoolHuntingEnabled = false;
+let isAutoSnipingEnabled = false;
+let rl: readline.Interface;
+
+// Kommandos
+const COMMANDS = {
+  // Scanner-Steuerung
+  START_SCANNER: 'start-scanner',
+  STOP_SCANNER: 'stop-scanner',
+  STATUS: 'status',
+  
+  // Trading-Modi
+  ENABLE_SNIPING: 'enable-sniping',
+  DISABLE_SNIPING: 'disable-sniping',
+  AUTO_SNIPE: 'auto-snipe',
+  MANUAL_SNIPE: 'manual-snipe',
+  
+  // Pool-Informationen
+  SHOW_POOLS: 'pools',
+  POOL_STATS: 'stats',
+  EXPORT_POOLS: 'export',
+  
+  // Wallet & System
+  WALLET: 'wallet',
+  WALLET_MENU: 'wallet-menu',
+  HELP: 'help',
+  EXIT: 'exit'
+} as const;
+
+// Initialisiere WalletManager
+const walletManager = new WalletManager();
+
+// Initialisiere das Readline Interface
+function initializeReadline() {
+  // Schließe existierendes Interface falls vorhanden
+  if (rl) {
+    rl.removeAllListeners();
+    rl.close();
+  }
+
+  rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: '> '
+  });
+
+  // Event-Handler für Benutzereingaben
+  rl.on('line', async (input) => {
+    const command = input.trim().toLowerCase();
+    
+    switch (command) {
+      case COMMANDS.START_SCANNER:
+        isPoolHuntingEnabled = true;
+        logInfo('Pool-Scanner gestartet');
+        break;
+
+      case COMMANDS.STOP_SCANNER:
+        isPoolHuntingEnabled = false;
+        logInfo('Pool-Scanner gestoppt');
+        break;
+
+      case COMMANDS.STATUS:
+        logInfo('Status', {
+          poolHunting: isPoolHuntingEnabled ? 'Aktiv' : 'Inaktiv',
+          trading: isTradingEnabled ? 'Aktiviert' : 'Deaktiviert',
+          autoSniping: isAutoSnipingEnabled ? 'An' : 'Aus'
+        });
+        break;
+
+      case COMMANDS.SHOW_POOLS:
+        try {
+          // Lese und zeige die letzten 10 Pools aus der CSV
+          const pools = fs.readFileSync(CSV_FILE, 'utf-8')
+            .split('\n')
+            .slice(1) // Header überspringen
+            .filter(Boolean)
+            .slice(-10); // Letzte 10 Einträge
+
+          console.log('\n=== Letzte 10 Pools ===');
+          if (pools.length === 0) {
+            console.log('Noch keine Pools gefunden.');
+          } else {
+            pools.forEach(pool => {
+              const [timestamp, dex, poolId, coinA, coinB, amountA, amountB] = pool.split(',');
+              console.log(`\nZeit: ${new Date(timestamp).toLocaleTimeString()}`);
+              console.log(`DEX: ${dex}`);
+              console.log(`Pool: ${poolId}`);
+              console.log(`Token: ${coinA} / ${coinB}`);
+              console.log(`Beträge: ${amountA} / ${amountB}`);
+            });
+          }
+        } catch (error) {
+          logError('Fehler beim Lesen der Pools', { error: error instanceof Error ? error.message : 'Unbekannter Fehler' });
+        }
+        break;
+
+      case COMMANDS.WALLET:
+        const defaultWallet = walletManager.getDefaultWallet();
+        if (defaultWallet) {
+          console.log('\n=== Wallet Info ===');
+          console.log('Adresse:', defaultWallet.address);
+          console.log('Typ:', defaultWallet.type);
+        } else {
+          console.log('❌ Kein Wallet konfiguriert');
+        }
+        break;
+
+      case COMMANDS.WALLET_MENU:
+        await walletManager.showMainMenu();
+        break;
+
+      case COMMANDS.HELP:
+        displayHelp();
+        break;
+
+      case COMMANDS.EXIT:
+        logInfo('Beende Programm...');
+        rl.close();
+        process.exit(0);
+        break;
+
+      default:
+        logInfo('Unbekannter Befehl. Geben Sie "help" ein für eine Liste der Befehle.');
+    }
+    
+    rl.prompt();
+  });
+
+  // Prompt anzeigen
+  rl.prompt();
+  
+  // Setze das Interface für den WalletManager
+  walletManager.setReadlineInterface(rl);
+}
+
+function displayHelp() {
+  console.log('\n📝 Verfügbare Kommandos:\n');
+  
+  console.log('=== Scanner-Steuerung ===');
+  console.log('start-scanner    - Pool-Scanner starten');
+  console.log('stop-scanner     - Pool-Scanner stoppen');
+  console.log('status           - Aktuellen Status anzeigen\n');
+  
+  console.log('=== Trading-Modi ===');
+  console.log('enable-sniping   - Sniping aktivieren');
+  console.log('disable-sniping  - Sniping deaktivieren');
+  console.log('auto-snipe       - Auto-Sniping ein/aus');
+  console.log('manual-snipe     - Manuelles Sniping\n');
+  
+  console.log('=== Pool-Informationen ===');
+  console.log('pools            - Gefundene Pools anzeigen');
+  console.log('stats            - Statistiken anzeigen');
+  console.log('export           - Pool-Daten exportieren\n');
+  
+  console.log('=== Wallet & System ===');
+  console.log('wallet           - Wallet-Info anzeigen');
+  console.log('wallet-menu      - Wallet-Manager öffnen');
+  console.log('help             - Diese Hilfe anzeigen');
+  console.log('exit             - Programm beenden\n');
+}
+
+// CSV Headers für Pool-Daten
+const CSV_HEADERS = 'timestamp,dex,poolId,coinA,coinB,amountA,amountB,liquidity\n';
+const CSV_FILE = path.join(process.cwd(), 'pools.csv');
+
+// Stelle sicher, dass die CSV-Datei existiert
+if (!fs.existsSync(CSV_FILE)) {
+  fs.writeFileSync(CSV_FILE, CSV_HEADERS);
+}
+
+// Event Polling Funktion
+async function startEventPolling() {
+  try {
+    // Verbindung testen
+    const checkpoint = await SUI.client.getLatestCheckpointSequenceNumber();
+    logInfo('🟢 Mainnet Verbindung hergestellt', { checkpoint });
+    
+    let poolCount = 0;
+    const startTime = Date.now();
+    let lastCheckpoint = BigInt(checkpoint) - BigInt(1000); // Starte 1000 Checkpoints zurück
+    let lastEventTime = Date.now();
+    let errorCount = 0;
+    const MAX_ERRORS = 5;
+    const ERROR_RESET_TIME = 60000; // 1 Minute
+    let lastErrorTime = 0;
+
+    // Endlos-Schleife für kontinuierliches Polling
+    while (true) {
+      try {
+        // Überprüfe ob Scanner aktiv ist
+        if (!isPoolHuntingEnabled) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          continue;
+        }
+
+        // Reset Error-Counter wenn genug Zeit vergangen ist
+        if (Date.now() - lastErrorTime > ERROR_RESET_TIME) {
+          errorCount = 0;
+        }
+
+        // Hole neue Events mit erweitertem Checkpoint-Bereich
+        const events = await SUI.client.queryEvents({
+          query: {
+            MoveEventType: '0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::factory::CreatePoolEvent'
+          },
+          limit: 50
+        });
+
+        // Hole auch Events vom zweiten DEX
+        const events2 = await SUI.client.queryEvents({
+          query: {
+            MoveEventType: '0xb24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::swap::Created_Pool_Event'
+          },
+          limit: 50
+        });
+
+        // Kombiniere die Events
+        const allEvents = [...events.data, ...events2.data];
+        
+        // Verarbeite Events
+        for (const event of allEvents) {
+          const poolData = decomposeEventData(event);
+            
+          if (poolData) {
+            poolCount++;
+            const now = Date.now();
+            const eventAge = now - Number(event.timestampMs);
+
+            logInfo('🔵 Neuer Pool erkannt', {
+              timestamp: new Date(Number(event.timestampMs)).toISOString(),
+              alter: `${(eventAge / 1000).toFixed(2)}s`,
+              dex: poolData.dex,
+              poolId: poolData.poolId,
+              coins: {
+                coinA: poolData.coinA,
+                coinB: poolData.coinB
+              }
+            });
+
+            // Speichere Pool-Daten in CSV
+            await savePoolToCSV(poolData);
+
+            // Zeige Statistik alle 10 Pools
+            if (poolCount % 10 === 0) {
+              const runtime = (Date.now() - startTime) / 1000;
+              const avgEventAge = (now - lastEventTime) / 1000;
+              logInfo('📊 Scanner Statistik', {
+                poolsGefunden: poolCount,
+                laufzeitSekunden: runtime,
+                poolsProMinute: (poolCount / runtime * 60).toFixed(2),
+                durchschnEventAlter: `${avgEventAge.toFixed(2)}s`,
+                tradingAktiv: isTradingEnabled
+              });
+              lastEventTime = now;
+            }
+          }
+        }
+
+        // Aktualisiere Checkpoint und passe Polling-Intervall an
+        const currentCheckpoint = await SUI.client.getLatestCheckpointSequenceNumber();
+        if (BigInt(currentCheckpoint) > lastCheckpoint) {
+          lastCheckpoint = BigInt(currentCheckpoint);
+          // Kurze Pause wenn neue Events gefunden wurden
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } else {
+          // Längere Pause wenn keine neuen Events
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // Reset Error-Counter bei erfolgreicher Ausführung
+        errorCount = 0;
+
+      } catch (error) {
+        errorCount++;
+        lastErrorTime = Date.now();
+        
+        logError('Fehler beim Polling', {
+          error: error instanceof Error ? error.message : 'Unbekannter Fehler',
+          checkpoint: lastCheckpoint,
+          errorCount,
+          maxErrors: MAX_ERRORS
+        });
+
+        // Beende Programm bei zu vielen Fehlern
+        if (errorCount >= MAX_ERRORS) {
+          logError('Zu viele Fehler - Neustart erforderlich', {
+            totalErrors: errorCount,
+            timeWindow: `${ERROR_RESET_TIME/1000}s`
+          });
+          process.exit(1);
+        }
+
+        // Exponentielles Backoff bei Fehlern
+        const backoffTime = Math.min(1000 * Math.pow(2, errorCount), 30000);
+        logInfo('Warte vor erneutem Versuch', { backoffTime: `${backoffTime/1000}s` });
+        await new Promise(resolve => setTimeout(resolve, backoffTime));
+      }
+    }
+  } catch (error) {
+    logError('Fehler beim Event Polling', {
+      error: error instanceof Error ? error.message : 'Unbekannter Fehler'
+    });
+    throw error;
+  }
+}
+
+// Hilfsfunktion zum Speichern von Pool-Daten in CSV
+async function savePoolToCSV(pool: ParsedPoolData) {
+  const timestamp = new Date().toISOString();
+  const csvLine = [
+    timestamp,
+    pool.dex,
+    pool.poolId,
+    pool.coinA,
+    pool.coinB,
+    pool.amountA,
+    pool.amountB,
+    pool.liquidity
+  ].join(',');
+
+  fs.appendFileSync(CSV_FILE, csvLine + '\n');
+  logInfo('Pool in CSV gespeichert', { poolId: pool.poolId });
+}
+
+// Hauptfunktion
+async function main() {
+  try {
+    // Setup User Interface
+    initializeReadline();
+    
+    // Start event polling
+    await startEventPolling();
+    
+  } catch (error) {
+    logError('Fehler in der Hauptfunktion', {
+      error: error instanceof Error ? error.message : 'Unbekannter Fehler'
+    });
+    process.exit(1);
+  }
+}
+
+// Starte die Anwendung
+main().catch(console.error);

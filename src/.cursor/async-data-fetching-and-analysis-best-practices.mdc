@@ -1,0 +1,9 @@
+---
+description: Best practices for handling asynchronous data fetching and analysis in algo trading
+globs: **/*.{ts,tsx}
+---
+- Use Promises and async/await for clean and readable asynchronous code
+- Implement proper error handling and retries for robust data fetching
+- Utilize efficient data processing libraries like Lodash for quick analysis
+- Implement streaming data processing for handling large datasets
+- Use Web Workers for offloading heavy computations from the main thread

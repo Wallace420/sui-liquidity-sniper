@@ -1,5 +1,7 @@
-import { TransactionBlock } from "@mysten/sui.js";
-import { SUI } from "../chain/config";
+import { Transaction } from "@mysten/sui/transactions";
+import { SUI } from "../chain/config.js";
+import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
+import { SuiClient } from '@mysten/sui/client';
 
 // Configuration
 const MAX_GAS_BUDGET = 50_000_000;
@@ -14,6 +16,7 @@ interface MEVProtectionConfig {
   minGasPrice?: number;
   maxRetries?: number;
   priorityFee?: number;
+  keypair: Ed25519Keypair;
 }
 
 /**
@@ -23,19 +26,20 @@ interface MEVProtectionConfig {
 export class MEVProtection {
   private config: Required<MEVProtectionConfig>;
 
-  constructor(config: MEVProtectionConfig = {}) {
+  constructor(config: MEVProtectionConfig) {
     this.config = {
       maxGasBudget: config.maxGasBudget || MAX_GAS_BUDGET,
       minGasPrice: config.minGasPrice || MIN_GAS_PRICE,
       maxRetries: config.maxRetries || MAX_RETRIES,
-      priorityFee: config.priorityFee || 0
+      priorityFee: config.priorityFee || 0,
+      keypair: config.keypair
     };
   }
 
   /**
    * Optimize transaction for MEV protection
    */
-  async protectTransaction(tx: TransactionBlock): Promise<TransactionBlock> {
+  async protectTransaction(tx: Transaction): Promise<Transaction> {
     // Set optimal gas budget
     tx.setGasBudget(this.config.maxGasBudget);
 
@@ -50,7 +54,7 @@ export class MEVProtection {
   /**
    * Execute transaction with MEV protection
    */
-  async executeProtectedTransaction(tx: TransactionBlock): Promise<string> {
+  async executeProtectedTransaction(tx: Transaction): Promise<string> {
     let lastError: Error | null = null;
     
     for (let i = 0; i < this.config.maxRetries; i++) {
@@ -59,8 +63,9 @@ export class MEVProtection {
         const protectedTx = await this.protectTransaction(tx);
 
         // Execute with high priority
-        const result = await SUI.client.signAndExecuteTransactionBlock({
-          transactionBlock: protectedTx,
+        const result = await SUI.client.signAndExecuteTransaction({
+          transaction: protectedTx,
+          signer: this.config.keypair,
           options: {
             showEffects: true,
             showEvents: true

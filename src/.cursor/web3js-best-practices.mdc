@@ -1,0 +1,9 @@
+---
+description: Best practices for using Web3.js in Web3 applications
+globs: **/*.{ts,tsx,js,jsx} ---
+---
+- Use `web3.eth.Contract` for interacting with smart contracts
+- Implement proper error handling with `try-catch` blocks
+- Utilize `web3.utils` for common Web3 utility functions
+- Use `web3.eth.getAccounts()` to manage user accounts
+- Implement gas optimization techniques when sending transactions
