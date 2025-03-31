@@ -1,5 +1,6 @@
 # SUI Liquidity Sniper
 
+<<<<<<< HEAD
 Ein fortschrittliches Tool zur Überwachung und Interaktion mit Liquiditätspools auf der SUI-Blockchain.
 
 ## Projektstruktur
@@ -123,6 +124,10 @@ npm run start:prod
 
 Dieses Projekt ist urheberrechtlich geschützt. Alle Rechte vorbehalten.
 
+=======
+Ein leistungsstarkes Tool zum Snipen von Liquiditätspools auf der SUI-Blockchain.
+
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 ## Funktionen
 
 - **Verbesserte Terminal-Ausgabe**: Klare und strukturierte Anzeige aller wichtigen Informationen
@@ -132,6 +137,7 @@ Dieses Projekt ist urheberrechtlich geschützt. Alle Rechte vorbehalten.
 - **Detaillierte Pool-Informationen**: Umfassende Informationen zu jedem Pool, einschließlich Social-Media-Links und Metriken
 - **Automatischer Modus**: Automatisches Snipen von Pools, die den Filterkriterien entsprechen
 
+<<<<<<< HEAD
 ## Neue Web-Oberfläche (In Entwicklung)
 
 Wir entwickeln derzeit eine moderne Web-Oberfläche für den SUI Liquidity Sniper, die folgende Vorteile bietet:
@@ -157,6 +163,23 @@ Die neue Web-Oberfläche wird folgende Hauptkomponenten enthalten:
 4. **Wallet-Manager**: Verwaltung von Wallets und Transaktionen
 5. **Einstellungen**: Anpassung von Filterkriterien und Benachrichtigungen
 6. **Analysen**: Detaillierte Analysen und Statistiken zu Pools und Trades
+=======
+## Installation
+
+```bash
+# Klone das Repository
+git clone https://github.com/yourusername/sui-liquidity-sniper.git
+
+# Wechsle in das Verzeichnis
+cd sui-liquidity-sniper
+
+# Installiere die Abhängigkeiten
+npm install
+
+# Starte die Anwendung
+npm run cli
+```
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 
 ## Befehle und Schnellzugriffstasten
 

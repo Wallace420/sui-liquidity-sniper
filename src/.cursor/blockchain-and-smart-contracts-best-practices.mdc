@@ -1,0 +1,13 @@
+---
+description: Best practices for blockchain integration and smart contract development in algo trading
+globs: **/*.{ts,tsx,sol}
+---
+---
+name: blockchain-and-smart-contracts-best-practices.mdc
+---
+
+- Use secure and audited smart contract libraries like OpenZeppelin
+- Implement proper gas optimization techniques for cost-effective transactions
+- Utilize off-chain computations and oracles for data integrity and efficiency
+- Implement robust error handling and fallback mechanisms in smart contracts
+- Follow best practices for secure key management and wallet integration

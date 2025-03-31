@@ -35,5 +35,9 @@ interface SecurityCheckResult {
         };
     };
 }
+<<<<<<< HEAD
 export declare function checkPoolSecurity(poolId: string, dex: string, p0: string): Promise<SecurityCheckResult>;
+=======
+export declare function checkPoolSecurity(poolId: string, dex: string): Promise<SecurityCheckResult>;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 export {};

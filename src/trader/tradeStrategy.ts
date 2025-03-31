@@ -16,7 +16,10 @@ import { createBlueMoveBuyTransaction, createBlueMoveSellTransaction } from './d
 // @ts-ignore: Keine Typdefinition für bn.js
 import BN from 'bn.js';
 import { LIVE_TRADING_CONFIG } from "../config/trading_config.js";
+<<<<<<< HEAD
 import { TradeData } from "../utils/dashboard.js";
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 
 // Constants
 const MAX_RETRIES = 3;
@@ -98,6 +101,7 @@ interface ExtendedLogMetadata {
   [key: string]: any;
 }
 
+<<<<<<< HEAD
 // Deklariere sellAction vor der Verwendung
 async function sellAction(tradingInfo: TradingInfo): Promise<void> {
   let tx: string = '';
@@ -159,6 +163,8 @@ async function sellAction(tradingInfo: TradingInfo): Promise<void> {
   }
 }
 
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 async function tryAgg(_coinIn: string, _coinOut: string, amount: string): Promise<string | null> {
   let retries = 0;
   let lastError: Error | null = null;
@@ -192,6 +198,7 @@ async function tryAgg(_coinIn: string, _coinOut: string, amount: string): Promis
   }
 
   return null;
+<<<<<<< HEAD
 }
 
 export class TradingStrategy {
@@ -508,6 +515,324 @@ export class TradingStrategy {
 }
 
 async function buyAction(digest: string, info: ParsedPoolData | null) {
+=======
+}
+
+export class TradingStrategy {
+  private static instance: TradingStrategy;
+  private keypair: Ed25519Keypair;
+  private positions: Map<string, PositionConfig>;
+  private highestPrices: Map<string, number>;
+  private activeTrades: Map<string, any>;
+  private tradingEnabled: boolean;
+
+  private constructor() {
+    this.keypair = new Ed25519Keypair();
+    this.positions = new Map();
+    this.highestPrices = new Map();
+    this.activeTrades = new Map();
+    this.tradingEnabled = true;
+  }
+
+  public static getInstance(): TradingStrategy {
+    if (!TradingStrategy.instance) {
+      TradingStrategy.instance = new TradingStrategy();
+    }
+    return TradingStrategy.instance;
+  }
+
+  public getActiveTrades(): Map<string, any> {
+    return this.activeTrades;
+  }
+
+  public getTradeAnalysis(txId: string): any {
+    const trade = this.activeTrades.get(txId);
+    if (!trade) return null;
+
+    return {
+      volume24h: trade.volume24h || 0,
+      uniqueBuyers: trade.uniqueBuyers || 0,
+      buyPressure: trade.buyPressure || 0,
+      liquidityHealth: trade.liquidityHealth || 0,
+      priceStability: trade.priceStability || 0
+    };
+  }
+
+  public async takeProfits(txId: string, profitType: any): Promise<boolean> {
+    const trade = this.activeTrades.get(txId);
+    if (!trade) return false;
+
+    try {
+      // Implementiere die Logik zum Verkaufen basierend auf profitType
+      const tradingInfo: TradingInfo = {
+        initialSolAmount: trade.initialSuiAmount || '0',
+        currentAmount: trade.currentAmount || '0',
+        tokenToSell: trade.tokenAddress,
+        tokenOnWallet: trade.tokenAmount,
+        poolAddress: trade.poolAddress,
+        dex: trade.dex,
+        suiIsA: trade.suiIsA,
+        scamProbability: trade.scamProbability || 0,
+        // Kompatibilitätsfelder
+        initialSuiAmount: trade.initialSuiAmount || '0',
+        tokenToTrade: trade.tokenAddress,
+        tokenAmount: trade.tokenAmount
+      };
+
+      await sellAction(tradingInfo);
+      this.activeTrades.delete(txId);
+      return true;
+    } catch (error) {
+      logError('Fehler beim Profit-Taking', {
+        error: error instanceof Error ? error.message : 'Unbekannter Fehler',
+        txId
+      });
+      return false;
+    }
+  }
+
+  public async toggleAutoPilot(tradeId: string, status: boolean): Promise<void> {
+    const trade = this.activeTrades.get(tradeId);
+    if (trade) {
+      trade.isAutoPilot = status;
+      this.activeTrades.set(tradeId, trade);
+    }
+  }
+
+  private calculatePositionSize(
+    poolData: ParsedPoolData,
+    securityScore: number
+  ): number {
+    // Basis-Position basierend auf Security Score
+    let positionSize = DEFAULT_POSITION_SIZE * (securityScore / 100);
+
+    // Liquiditäts-Anpassung
+    const liquidityScore = this.calculateLiquidityScore(poolData);
+    positionSize *= liquidityScore;
+
+    // Maximale Position begrenzen
+    return Math.min(positionSize, MAX_POSITION_SIZE);
+  }
+
+  private calculateLiquidityScore(poolData: ParsedPoolData): number {
+    const totalLiquidity = Number(poolData.amountA) + Number(poolData.amountB);
+    // Verbesserte logarithmische Skalierung mit Mindestliquidität
+    const minLiquidity = 1000; // Mindestliquidität in Basiseinheiten
+    
+    if (totalLiquidity < minLiquidity) {
+      return 0; // Zu geringe Liquidität, sofort ablehnen
+    }
+    
+    // Logarithmische Skalierung mit Bonus für höhere Liquidität
+    const baseScore = Math.min(1, Math.log10(totalLiquidity) / 10);
+    
+    // Zusätzliche Faktoren für die Bewertung
+    const balanceFactor = Math.min(
+      Number(poolData.amountA) / Number(poolData.amountB),
+      Number(poolData.amountB) / Number(poolData.amountA)
+    );
+    
+    // Kombinierte Bewertung: Liquidität + Balance
+    return baseScore * (0.5 + 0.5 * balanceFactor);
+  }
+
+  private async updateTrailingStop(
+    poolId: string,
+    currentPrice: number
+  ): Promise<boolean> {
+    const position = this.positions.get(poolId);
+    if (!position?.trailingStop) return false;
+
+    const highestPrice = this.highestPrices.get(poolId) || currentPrice;
+    
+    // Aktualisiere höchsten Preis
+    if (currentPrice > highestPrice) {
+      this.highestPrices.set(poolId, currentPrice);
+      return false;
+    }
+
+    // Prüfe Trailing-Stop
+    const trailingStopPrice = highestPrice * (1 - position.trailingDistance);
+    if (currentPrice < trailingStopPrice) {
+      return true; // Trailing-Stop ausgelöst
+    }
+
+    return false;
+  }
+
+  public async executeBuyStrategy(
+    poolData: ParsedPoolData & { tokenAddress: string },
+    amount: number,
+    slippage: number
+  ): Promise<TradeResult> {
+    try {
+      // Sicherheitsprüfung
+      const security = await checkPoolSecurity(poolData.poolId, poolData.dex);
+      if (!security.isSecure) {
+        return {
+          success: false,
+          error: `Pool nicht sicher: ${security.warnings.join(', ')}`
+        };
+      }
+
+      // Position Sizing
+      const positionSize = this.calculatePositionSize(poolData, security.score);
+      const adjustedAmount = amount * positionSize;
+
+      // Position konfigurieren
+      const positionConfig: PositionConfig = {
+        size: positionSize,
+        takeProfit: DEFAULT_TAKE_PROFIT,
+        stopLoss: DEFAULT_STOP_LOSS,
+        trailingStop: true,
+        trailingDistance: TRAILING_DISTANCE
+      };
+      this.positions.set(poolData.poolId, positionConfig);
+
+      // Trading-Logik basierend auf DEX
+      let transaction: Transaction;
+      switch (poolData.dex) {
+        case 'Cetus':
+          transaction = await createCetusBuyTransaction(
+            poolData.poolId,
+            poolData.tokenAddress,
+            adjustedAmount
+          );
+          break;
+        case 'BlueMove':
+          transaction = await createBlueMoveBuyTransaction(
+            poolData.poolId,
+            poolData.tokenAddress,
+            adjustedAmount
+          );
+          break;
+        default:
+          throw new Error(`Nicht unterstützter DEX: ${poolData.dex}`);
+      }
+
+      // Transaktion ausführen
+      const response = await this.executeTransaction(transaction);
+      
+      // Initialisiere höchsten Preis für Trailing-Stop
+      this.highestPrices.set(poolData.poolId, adjustedAmount);
+
+      return {
+        success: true,
+        transactionId: response.digest,
+        metrics: {
+          entryPrice: adjustedAmount,
+          exitPrice: 0,
+          timeInTrade: 0,
+          slippage: 0
+        }
+      };
+
+    } catch (error) {
+      logError('Fehler bei der Ausführung der Kauf-Strategie', {
+        error: error instanceof Error ? error.message : 'Unbekannter Fehler',
+        poolId: poolData.poolId
+      });
+
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unbekannter Fehler'
+      };
+    }
+  }
+
+  private async executeTransaction(tx: Transaction): Promise<SuiTransactionBlockResponse> {
+    try {
+      const result = await SUI.client.signAndExecuteTransaction({
+        transaction: tx,
+        signer: this.keypair,
+        requestType: 'WaitForLocalExecution',
+        options: {
+          showEffects: true,
+          showEvents: true
+        }
+      });
+
+      if (result.effects?.status.status !== 'success') {
+        throw new Error(`Transaktion fehlgeschlagen: ${result.effects?.status.error || 'Unbekannter Fehler'}`);
+      }
+
+      return result;
+    } catch (error) {
+      logError('Fehler beim Ausführen der Transaktion', {
+        error: error instanceof Error ? error.message : 'Unbekannter Fehler'
+      });
+      throw error;
+    }
+  }
+
+  // Zusätzliche Methoden aus TradeController
+  public enableTrading(): void {
+    this.tradingEnabled = true;
+    logInfo('Trading enabled');
+  }
+
+  public disableTrading(): void {
+    this.tradingEnabled = false;
+    logInfo('Trading disabled');
+  }
+
+  public isTradingEnabled(): boolean {
+    return this.tradingEnabled;
+  }
+
+  // Methode zur Berechnung des Gewinns zwischen Kauf- und Verkaufstransaktion
+  public async calculateProfit(
+    buyTxId: string,
+    sellTxId: string
+  ): Promise<{ profit: number; profitPercentage: number }> {
+    try {
+      const buyTx = await SUI.client.getTransactionBlock({
+        digest: buyTxId,
+        options: { showBalanceChanges: true }
+      });
+
+      const sellTx = await SUI.client.getTransactionBlock({
+        digest: sellTxId,
+        options: { showBalanceChanges: true }
+      });
+
+      // Extrahiere SUI-Beträge aus den Transaktionen
+      const buyChanges = buyTx.balanceChanges || [];
+      const sellChanges = sellTx.balanceChanges || [];
+
+      const suiBuy = buyChanges.find((change: any) => 
+        change.coinType.endsWith('::sui::SUI') && BigInt(change.amount) < 0
+      );
+
+      const suiSell = sellChanges.find((change: any) => 
+        change.coinType.endsWith('::sui::SUI') && BigInt(change.amount) > 0
+      );
+
+      if (!suiBuy || !suiSell) {
+        throw new Error('Could not find SUI balance changes');
+      }
+
+      const buyAmount = Math.abs(Number(suiBuy.amount));
+      const sellAmount = Math.abs(Number(suiSell.amount));
+      
+      const profit = sellAmount - buyAmount;
+      const profitPercentage = (profit / buyAmount) * 100;
+
+      return { profit, profitPercentage };
+    } catch (error) {
+      logError('Error calculating profit', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        buyTxId,
+        sellTxId
+      } as ExtendedLogMetadata);
+      
+      throw error;
+    }
+  }
+}
+
+export async function buyAction(digest: string, info: ParsedPoolData | null) {
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
   const { client } = SUI;
 
   try {
@@ -546,15 +871,24 @@ async function buyAction(digest: string, info: ParsedPoolData | null) {
       scamProbability: scamChance
     };
 
+<<<<<<< HEAD
     await upsertTrade(tradeData as any);
+=======
+    await upsertTrade(tradeData);
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 
     const tradingInfo: TradingInfo = {
       initialSolAmount: '0',
       currentAmount: '0',
       tokenToSell: tokenBalance.coinType,
       tokenOnWallet: tokenBalance.amount,
+<<<<<<< HEAD
       poolAddress: info.poolId, 
       dex: info?.dex as SUPPORTED_DEX || 'Cetus',
+=======
+      poolAddress: info.poolId, // Jetzt garantiert nicht undefined
+      dex: info?.dex || 'Cetus',
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
       suiIsA: info?.coinA.endsWith("::sui::SUI") === true,
       scamProbability: scamChance
     };
@@ -564,7 +898,10 @@ async function buyAction(digest: string, info: ParsedPoolData | null) {
       sellAction: () => sellAction(tradingInfo)
     });
 
+<<<<<<< HEAD
     return tradeData;
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
   } catch (e) {
     console.error("Error in buyAction:", e);
     await wait(1000);
@@ -572,6 +909,69 @@ async function buyAction(digest: string, info: ParsedPoolData | null) {
   }
 }
 
+<<<<<<< HEAD
+=======
+export async function sellAction(tradingInfo: TradingInfo): Promise<void> {
+  let tx: string = '';
+
+  console.log("SELL ACTION::", tradingInfo);
+
+  try {
+    switch (tradingInfo.dex) {
+      case 'Cetus':
+        const cetusTxResult = await sellDirectCetus(tradingInfo);
+        tx = typeof cetusTxResult === 'string' ? cetusTxResult : '';
+        break;
+
+      case 'BlueMove':
+        const bluemoveTxResult = await tryAgg(tradingInfo.tokenToSell, "0x2::sui::SUI", tradingInfo.tokenOnWallet);
+        tx = bluemoveTxResult || '';
+        break;
+
+      default:
+        console.log("Unsupported DEX");
+        return;
+    }
+
+    if (!tx) {
+      throw new Error('Sell transaction failed to execute');
+    }
+
+    const trade = await SUI.client.waitForTransaction({
+      digest: tx,
+      options: { showBalanceChanges: true },
+      pollInterval: POLL_INTERVAL,
+      timeout: TRANSACTION_TIMEOUT
+    });
+
+    const { balanceChanges } = trade;
+    if (!balanceChanges?.length) {
+      throw new Error('No balance changes in sell transaction');
+    }
+
+    const suiBalance = balanceChanges.find((b: any) => b.coinType.endsWith("::sui::SUI"));
+    if (!suiBalance) {
+      throw new Error('SUI balance change not found');
+    }
+
+    await updateTrade({
+      poolAddress: tradingInfo.poolAddress,
+      sellDigest: tx,
+      suiReceivedAmount: Math.abs(Number(suiBalance.amount)).toString(),
+    });
+
+    await sendSellMessage(tx, tradingInfo.poolAddress);
+
+  } catch (e) {
+    console.error("Error in sellAction:", e);
+    sendErrorMessage({ 
+      message: `Sell failed for ${tradingInfo.tokenToSell}: ${e instanceof Error ? e.message : 'Unknown error'}`
+    });
+    throw e; // Re-throw to be handled by caller
+  }
+}
+
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 async function recoverPoolData(trade: any): Promise<TradingInfo | null> {
   const { client } = SUI;
 
@@ -624,7 +1024,11 @@ async function recoverPoolData(trade: any): Promise<TradingInfo | null> {
   }
 }
 
+<<<<<<< HEAD
 async function runTrade(): Promise<never> {
+=======
+export async function runTrade(): Promise<never> {
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
   console.log("Running trade monitor");
 
   while (true) {
@@ -750,6 +1154,9 @@ async function performTrade(info: TradingInfo): Promise<void> {
 
 // Exportiere eine Singleton-Instanz
 export const tradingStrategy = TradingStrategy.getInstance();
+<<<<<<< HEAD
 
 // Exportiere die Funktionen
 export { buyAction, runTrade };
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca

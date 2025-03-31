@@ -9,6 +9,7 @@ export type TradingInfo = {
     dex: SUPPORTED_DEX;
     suiIsA: boolean;
     scamProbability: number;
+<<<<<<< HEAD
     initialSuiAmount?: string;
     tokenToTrade?: string;
     tokenAmount?: string;
@@ -59,3 +60,9 @@ export declare function buyAction(digest: string, info: ParsedPoolData | null): 
 export declare function sellAction(tradingInfo: TradingInfo): Promise<void>;
 export declare function runTrade(): Promise<never>;
 export declare const tradingStrategy: TradingStrategy;
+=======
+};
+export declare function buyAction(digest: string, info: ParsedPoolData | null): Promise<null | undefined>;
+export declare function sellAction(tradingInfo: TradingInfo): Promise<void>;
+export declare function runTrade(): Promise<never>;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca

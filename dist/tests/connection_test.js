@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { SUI } from '../chain/config.js';
 import { logInfo, logError } from '../utils/logger.js';
+=======
+import { SUI } from '../chain/config';
+import { logInfo, logError } from '../utils/logger';
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 import dotenv from 'dotenv';
 dotenv.config();
 async function testConnection() {
@@ -33,7 +38,11 @@ async function testConnection() {
             endCheckpoint: endCheckpoint.toString()
         });
         // Analysiere gefundene Events
+<<<<<<< HEAD
         const poolEvents = events.data.filter((event) => event.type.includes('factory::CreatePoolEvent') ||
+=======
+        const poolEvents = events.data.filter(event => event.type.includes('factory::CreatePoolEvent') ||
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
             event.type.includes('swap::Created_Pool_Event'));
         if (poolEvents.length > 0) {
             logInfo('🎯 Pool-Events gefunden', {

@@ -5,6 +5,7 @@ import { sendBuyMessage, sendErrorMessage, sendSellMessage, sendUpdateMessage } 
 import { sell as sellDirectCetus } from "./dex/cetus.js";
 import { scamProbability } from "./checkscam.js";
 import { sellWithAgg } from "./index.js";
+<<<<<<< HEAD
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { logError, logInfo } from '../utils/logger.js';
 import { checkPoolSecurity } from '../security/pool_security.js';
@@ -27,6 +28,18 @@ const DEFAULT_TAKE_PROFIT = 2.0;
 const DEFAULT_STOP_LOSS = 0.15;
 const TRAILING_ACTIVATION = 0.5;
 const TRAILING_DISTANCE = 0.3;
+=======
+// Constants
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 1000; // 1 second
+const EMERGENCY_SELL_TIMEOUT = 20000; // 20 seconds
+const TRADE_CHECK_INTERVAL = 2000; // 2 seconds
+const HIGH_SCAM_PROBABILITY = 50;
+const PROFIT_THRESHOLD = 1;
+const TRAILING_STOP_DISTANCE = 10;
+const POLL_INTERVAL = 1000;
+const TRANSACTION_TIMEOUT = 100000;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 // State management
 const tradesRunning = new Set();
 const stopLoss = new Map();
@@ -63,6 +76,7 @@ async function tryAgg(_coinIn, _coinOut, amount) {
     }
     return null;
 }
+<<<<<<< HEAD
 export class TradingStrategy {
     static instance;
     keypair;
@@ -307,6 +321,8 @@ export class TradingStrategy {
         }
     }
 }
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 export async function buyAction(digest, info) {
     const { client } = SUI;
     try {
@@ -323,17 +339,24 @@ export async function buyAction(digest, info) {
             throw new Error('Missing balance changes');
         }
         const scamChance = await scamProbability(info);
+<<<<<<< HEAD
         // Stelle sicher, dass poolAddress nicht undefined ist
         if (!info?.poolId) {
             throw new Error('Pool ID is missing');
         }
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
         const tradeData = {
             tokenAddress: tokenBalance.coinType,
             tokenAmount: tokenBalance.amount,
             buyDigest: digest,
             suiSpentAmount: Math.abs(Number(suiBalance.amount)).toString(),
             dex: info?.dex || 'Cetus',
+<<<<<<< HEAD
             poolAddress: info.poolId, // Jetzt garantiert nicht undefined
+=======
+            poolAddress: info?.poolId,
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
             amountA: info?.amountA,
             amountB: info?.amountB,
             suiIsA: info?.coinA.endsWith("::SUI") === true,
@@ -345,7 +368,11 @@ export async function buyAction(digest, info) {
             currentAmount: '0',
             tokenToSell: tokenBalance.coinType,
             tokenOnWallet: tokenBalance.amount,
+<<<<<<< HEAD
             poolAddress: info.poolId, // Jetzt garantiert nicht undefined
+=======
+            poolAddress: info?.poolId,
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
             dex: info?.dex || 'Cetus',
             suiIsA: info?.coinA.endsWith("::sui::SUI") === true,
             scamProbability: scamChance
@@ -486,6 +513,7 @@ async function performTrade(info) {
         console.log("PERFORM TRADE::", info);
         const currentAmount = Number(info.currentAmount);
         const initialAmount = Number(info.initialSolAmount);
+<<<<<<< HEAD
         // Schneller Ausstieg bei ungültigen Werten
         if (isNaN(currentAmount) || isNaN(initialAmount) || initialAmount <= 0) {
             console.error(`Ungültige Beträge für ${info.tokenToSell}: current=${currentAmount}, initial=${initialAmount}`);
@@ -498,6 +526,14 @@ async function performTrade(info) {
         // 1. Hohe Scam-Wahrscheinlichkeit - Sofortiger Verkauf
         if (info.scamProbability > HIGH_SCAM_PROBABILITY) {
             console.log(`Hohe Scam-Wahrscheinlichkeit (${info.scamProbability}%) erkannt für ${info.tokenToSell}`);
+=======
+        const variation = ((currentAmount - initialAmount) / initialAmount) * 100;
+        const max = maxVariance.get(info.tokenToSell) || -1;
+        const stop = stopLoss.get(info.tokenToSell) || -10;
+        // Emergency sell for high scam probability
+        if (info.scamProbability > HIGH_SCAM_PROBABILITY) {
+            console.log(`High scam probability (${info.scamProbability}%) detected for ${info.tokenToSell}`);
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
             try {
                 await Promise.race([
                     sellAction(info),
@@ -505,13 +541,20 @@ async function performTrade(info) {
                 ]);
             }
             catch (e) {
+<<<<<<< HEAD
                 console.error('Notverkauf fehlgeschlagen:', e);
                 sendErrorMessage({
                     message: `Scam erkannt (${info.scamProbability}%), Notverkauf fehlgeschlagen: ${e instanceof Error ? e.message : 'Unbekannter Fehler'}`
+=======
+                console.error('Emergency sell failed:', e);
+                sendErrorMessage({
+                    message: `Scam detected (${info.scamProbability}%), emergency sell failed: ${e instanceof Error ? e.message : 'Unknown error'}`
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
                 });
             }
             return;
         }
+<<<<<<< HEAD
         // 2. Gewinnmitnahme bei Erreichen des Profit-Thresholds
         if (variation > PROFIT_THRESHOLD) {
             console.log(`Gewinnmitnahme für ${info.tokenToSell} - Variation: ${variation.toFixed(2)}%, Ziel: ${PROFIT_THRESHOLD}%`);
@@ -543,15 +586,38 @@ async function performTrade(info) {
             }
         }
         // 4. Trailing-Stop aktualisieren bei neuem Höchststand
+=======
+        // Update trailing stop loss
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
         if (variation > max) {
             maxVariance.set(info.tokenToSell, variation);
             if (variation > TRAILING_STOP_DISTANCE) {
                 const newStop = variation - TRAILING_STOP_DISTANCE;
                 stopLoss.set(info.tokenToSell, newStop);
+<<<<<<< HEAD
                 console.log(`Trailing-Stop aktualisiert auf ${newStop.toFixed(2)}% für ${info.tokenToSell}`);
             }
         }
         // Status-Update senden
+=======
+                console.log(`Updated stop loss to ${newStop}% for ${info.tokenToSell}`);
+            }
+        }
+        // Check sell conditions
+        if (variation < stop || variation > PROFIT_THRESHOLD) {
+            console.log(`Selling ${info.tokenToSell} - Variation: ${variation}%, Stop: ${stop}%, Max: ${max}%`);
+            try {
+                await sellAction(info);
+            }
+            catch (e) {
+                console.error('Sell failed:', e);
+                sendErrorMessage({
+                    message: `Sell failed for ${info.tokenToSell}: ${e instanceof Error ? e.message : 'Unknown error'}\nVariation: ${variation}%\nStop: ${stop}%\nMax: ${max}%`
+                });
+            }
+            return;
+        }
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
         sendUpdateMessage({
             tokenAddress: info.tokenToSell,
             variacao: variation,
@@ -560,15 +626,24 @@ async function performTrade(info) {
         });
     }
     catch (e) {
+<<<<<<< HEAD
         console.error('Trade-Ausführungsfehler:', e);
         sendErrorMessage({
             message: `Trade-Fehler für ${info.tokenToSell}: ${e instanceof Error ? e.message : 'Unbekannter Fehler'}`
+=======
+        console.error('Trade execution error:', e);
+        sendErrorMessage({
+            message: `Trade error for ${info.tokenToSell}: ${e instanceof Error ? e.message : 'Unknown error'}`
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
         });
     }
     finally {
         tradesRunning.delete(info.tokenToSell);
     }
 }
+<<<<<<< HEAD
 // Exportiere eine Singleton-Instanz
 export const tradingStrategy = TradingStrategy.getInstance();
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 //# sourceMappingURL=tradeStrategy.js.map

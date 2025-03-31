@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import winston from 'winston';
 export interface LogMetadata {
     [key: string]: any;
@@ -44,3 +45,16 @@ export declare const logPool: (message: string, meta?: LogMetadata) => winston.L
 export declare const logTrade: (message: string, meta?: LogMetadata) => winston.Logger;
 export declare const logDebug: (message: string, meta?: LogMetadata) => winston.Logger;
 export declare const logSystemStatus: (message: string, meta?: LogMetadata) => winston.Logger;
+=======
+import * as winston from 'winston';
+declare const logger: winston.Logger;
+export declare function logInfo(message: string, data?: any): void;
+export declare function logError(message: string, data?: any): void;
+export declare function logPerformance(message: string, duration: number, data?: any): void;
+export declare function logWarning(message: string, data?: any): void;
+export declare function logDebug(message: string, data?: any): void;
+export declare function logTransaction(txHash: string, data?: any): void;
+export declare function logPoolEvent(eventType: string, data?: any): void;
+export declare function logSystemStatus(status: string, data?: any): void;
+export { logger };
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca

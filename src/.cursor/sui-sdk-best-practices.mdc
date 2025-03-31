@@ -1,0 +1,9 @@
+---
+description: Best practices for using the Mysten SUI SDK
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Use the latest version of the SUI SDK to ensure you have the most recent features and security updates
+- Implement proper error handling and logging when interacting with the SUI blockchain
+- Use the SUI SDK's built-in utilities for managing transactions and signing
+- Optimize gas usage by batching transactions when possible
+- Keep sensitive information like private keys secure and never expose them in client-side code

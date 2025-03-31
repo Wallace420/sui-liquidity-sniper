@@ -16876,6 +16876,7 @@
 {"level":"warn","liquidity":1074.2617234269426,"message":"Pool ignoriert: Honeypot erkannt: Verdächtige Kontraktfunktionen","poolId":"0x0dbb860741cce","reason":"Honeypot erkannt: Verdächtige Kontraktfunktionen, Zu neu: 15m < 1h, Zu hohe Konzentration: Top 10 Halter besitzen 92% > 70%, Zu viele Bundle-Transaktionen: 7 > 3, Bekannter Rug-Entwickler erkannt","riskScore":32.60917611629109,"timestamp":"2025-02-26T15:20:29.121Z"}
 {"level":"warn","liquidity":223.72594972955375,"message":"Pool ignoriert: Zu geringe Liquidität: 223.73 SUI < 250 SUI","poolId":"0x7527f3d1375e","reason":"Zu geringe Liquidität: 223.73 SUI < 250 SUI, Zu neu: 23s < 1h, Zu wenige Social-Media-Links: 0 < 1, Zu hohe Konzentration: Top 10 Halter besitzen 86% > 70%, Zu wenige Twitter-Follower: 8 < 100, Zu viele Bundle-Transaktionen: 5 > 3","riskScore":30.618667111639,"timestamp":"2025-02-26T15:20:37.135Z"}
 {"level":"warn","liquidity":698.4116939637165,"message":"Pool ignoriert: Zu neu: 6m < 1h","poolId":"0x761f93ba6c83d","reason":"Zu neu: 6m < 1h, Zu viele Bundle-Transaktionen: 8 > 3","riskScore":25.82029073184614,"timestamp":"2025-02-26T15:20:51.999Z"}
+<<<<<<< HEAD
 [18:09:58] ℹ️ 🟢 Mainnet Verbindung hergestellt {"metadata":{"checkpoint":"116882536"}}
 [18:11:52] ℹ️ Pool-Scanner gestartet {"metadata":{}}
 [18:11:52] ℹ️ 🔵 Neuer Pool erkannt {"metadata":{"timestamp":"2025-02-26T17:10:50.946Z","age":"61.50s","dex":"Cetus","poolId":"0xdd6c9e503f3ae444a834e56a5361fbc70032f0dbefbbe9f6e1aed60ef0764cfe","coins":{"coinA":"87b7bce036f35e5ba085161aa219ae0bcbfa3a984795446f1a7aeefa7dccf6d5::ccn::CCN","coinB":"0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}}}
@@ -22853,3 +22854,5 @@
 [19:25:34] ℹ️ 🔵 Neuer qualitativ hochwertiger Pool erkannt {"metadata":{"timestamp":"2025-02-26T06:50:29.373Z","age":"41704.89s","dex":"Cetus","poolId":"0x9519f1e824994cf123dfd090058005e5243ed45b2cc96ff76ea02423276af779","coins":{"coinA":"6400ec35be3616828a5ecbdd2622fbc698f9af900768f731e9f8621e283a0551::complete::COMPLETE","coinB":"0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"},"liquidity":{"sui":0,"token":0}}}
 [19:25:34] ℹ️ Pool in CSV gespeichert {"metadata":{"poolId":"0x9519f1e824994cf123dfd090058005e5243ed45b2cc96ff76ea02423276af779","dex":"Cetus","tokenSymbol":"TKN6400","riskScore":68}}
 [19:25:34] ℹ️ 📊 Scanner Statistik {"metadata":{"poolsFound":100,"runtime":5.962,"poolsPerMinute":"1006.37","avgEventAge":"5.96s","tradingEnabled":false}}
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca

@@ -11,11 +11,15 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+<<<<<<< HEAD
     "test:connection": "npx tsx src/tests/connection_test.ts",
     "web": "cd web && npm run dev",
     "web:build": "cd web && npm run build",
     "web:start": "cd web && npm run start",
     "setup:web": "cd web && npm install"
+=======
+    "test:connection": "npx tsx src/tests/connection_test.ts"
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
   },
   "dependencies": {
     "@cetusprotocol/cetus-sui-clmm-sdk": "^5.3.1",
@@ -37,10 +41,14 @@
     "tslib": "^2.8.1",
     "tsx": "^4.7.0",
     "uuid": "^11.1.0",
+<<<<<<< HEAD
     "winston": "^3.17.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "socket.io": "^4.7.4"
+=======
+    "winston": "^3.17.0"
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
   },
   "devDependencies": {
     "@types/estree": "^1.0.6",
@@ -51,8 +59,11 @@
     "@types/readline-sync": "^1.4.8",
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.5.14",
+<<<<<<< HEAD
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
     "jest": "^29.7.0",
     "prisma": "^5.10.0",
     "ts-jest": "^29.2.6",

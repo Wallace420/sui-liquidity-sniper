@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Changelog: SUI Liquidity Sniper
 
 Alle wichtigen Änderungen am Projekt werden in dieser Datei dokumentiert.
@@ -122,6 +123,11 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Wallet-Integration für SUI-Blockchain
 
 ## [2.1.0] 
+=======
+# Changelog
+
+## [2.1.0] - 2023-10-20
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 
 ### Hinzugefügt
 - Schnellzugriffsbefehle für alle wichtigen Funktionen (h, c, s, p, a, x, r, f, qb, qs, w, q)
@@ -141,7 +147,11 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Verbesserte Hilfeübersicht mit Anzeige der Schnellbefehle
 - Strukturierte Darstellung der Wallet-Informationen
 
+<<<<<<< HEAD
 ## [2.0.0] 
+=======
+## [2.0.0] - 2023-10-15
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 
 ### Hinzugefügt
 - Neue CLI-Benutzeroberfläche mit verbesserter Terminal-Ausgabe
@@ -164,6 +174,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Fehler bei der Darstellung von Risiko-Scores
 - Probleme mit der Benutzerinteraktion während laufender Prozesse
 
+<<<<<<< HEAD
 ## [1.5.0] - 2025-02-28
 
 ### Hinzugefügt
@@ -253,3 +264,13 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ### Behoben
 - Fehler bei der Darstellung von Risiko-Scores
 - Probleme mit der Benutzerinteraktion während laufender Prozesse 
+=======
+## [1.0.0] - 2023-09-01
+
+### Hinzugefügt
+- Erste Version des SUI Liquidity Snipers
+- Grundlegende Funktionen zum Snipen von Liquiditätspools
+- Telegram-Integration für Benachrichtigungen
+- Automatisches Kaufen und Verkaufen von Tokens
+- Grundlegende Risikobewertung für Pools 
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca

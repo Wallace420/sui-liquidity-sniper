@@ -6,9 +6,12 @@ export interface Transaction {
     gasFee?: number;
     type?: string;
     dex?: string;
+<<<<<<< HEAD
     id?: string;
     amount?: number;
     date?: Date;
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 }
 export interface ClusterNode {
     url: string;
@@ -17,6 +20,7 @@ export interface ClusterNode {
     lastChecked?: number;
     responseTime?: number;
     errorCount?: number;
+<<<<<<< HEAD
     id?: string;
 }
 export interface ParsedPoolData {
@@ -109,4 +113,6 @@ export interface Operation {
 export interface Congestion {
     level: number;
     description: string;
+=======
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 }

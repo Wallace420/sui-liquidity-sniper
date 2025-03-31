@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/types/index.ts"],"names":[],"mappings":"AAAA,uDAAuD;AA+GvD,MAAM,CAAC,MAAM,GAAG,GAAQ;IACtB,OAAO,EAAE,eAAe;IACxB,QAAQ,EAAE,CAAC;IACX,MAAM,EAAE,KAAK;IACb,IAAI,EAAE,KAAK;CACZ,CAAC"}
+=======
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/types/index.ts"],"names":[],"mappings":"AAAA,uDAAuD"}
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca

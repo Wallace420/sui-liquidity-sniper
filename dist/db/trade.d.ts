@@ -15,6 +15,14 @@ interface TradeData {
     suiReceivedAmount?: string;
 }
 export declare const upsertTrade: (data: TradeData) => Promise<{
+<<<<<<< HEAD
+=======
+    amountA: string | null;
+    amountB: string | null;
+    dex: string;
+    status: string;
+    timestamp: Date;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
     id: string;
     tokenAddress: string;
     tokenAmount: string;
@@ -22,6 +30,7 @@ export declare const upsertTrade: (data: TradeData) => Promise<{
     sellDigest: string | null;
     suiSpentAmount: string;
     suiReceivedAmount: string | null;
+<<<<<<< HEAD
     dex: string;
     poolAddress: string | null;
     amountA: string | null;
@@ -30,6 +39,11 @@ export declare const upsertTrade: (data: TradeData) => Promise<{
     scamProbability: number;
     status: string;
     timestamp: Date;
+=======
+    poolAddress: string | null;
+    suiIsA: boolean;
+    scamProbability: number;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 }>;
 interface UpdateTradeData {
     poolAddress: string;
@@ -37,6 +51,14 @@ interface UpdateTradeData {
     suiReceivedAmount: string;
 }
 export declare const updateTrade: (data: UpdateTradeData) => Promise<{
+<<<<<<< HEAD
+=======
+    amountA: string | null;
+    amountB: string | null;
+    dex: string;
+    status: string;
+    timestamp: Date;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
     id: string;
     tokenAddress: string;
     tokenAmount: string;
@@ -44,6 +66,7 @@ export declare const updateTrade: (data: UpdateTradeData) => Promise<{
     sellDigest: string | null;
     suiSpentAmount: string;
     suiReceivedAmount: string | null;
+<<<<<<< HEAD
     dex: string;
     poolAddress: string | null;
     amountA: string | null;
@@ -54,6 +77,18 @@ export declare const updateTrade: (data: UpdateTradeData) => Promise<{
     timestamp: Date;
 }>;
 export declare const getTrade: (poolAddress: string) => Promise<{
+=======
+    poolAddress: string | null;
+    suiIsA: boolean;
+    scamProbability: number;
+}>;
+export declare const getTrade: (poolAddress: string) => Promise<{
+    amountA: string | null;
+    amountB: string | null;
+    dex: string;
+    status: string;
+    timestamp: Date;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
     id: string;
     tokenAddress: string;
     tokenAmount: string;
@@ -61,6 +96,7 @@ export declare const getTrade: (poolAddress: string) => Promise<{
     sellDigest: string | null;
     suiSpentAmount: string;
     suiReceivedAmount: string | null;
+<<<<<<< HEAD
     dex: string;
     poolAddress: string | null;
     amountA: string | null;
@@ -71,6 +107,18 @@ export declare const getTrade: (poolAddress: string) => Promise<{
     timestamp: Date;
 } | null>;
 export declare const getTrades: () => Promise<{
+=======
+    poolAddress: string | null;
+    suiIsA: boolean;
+    scamProbability: number;
+} | null>;
+export declare const getTrades: () => Promise<{
+    amountA: string | null;
+    amountB: string | null;
+    dex: string;
+    status: string;
+    timestamp: Date;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
     id: string;
     tokenAddress: string;
     tokenAmount: string;
@@ -78,6 +126,7 @@ export declare const getTrades: () => Promise<{
     sellDigest: string | null;
     suiSpentAmount: string;
     suiReceivedAmount: string | null;
+<<<<<<< HEAD
     dex: string;
     poolAddress: string | null;
     amountA: string | null;
@@ -88,6 +137,18 @@ export declare const getTrades: () => Promise<{
     timestamp: Date;
 }[]>;
 export declare const getOpenTrades: () => Promise<{
+=======
+    poolAddress: string | null;
+    suiIsA: boolean;
+    scamProbability: number;
+}[]>;
+export declare const getOpenTrades: () => Promise<{
+    amountA: string | null;
+    amountB: string | null;
+    dex: string;
+    status: string;
+    timestamp: Date;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
     id: string;
     tokenAddress: string;
     tokenAmount: string;
@@ -95,6 +156,7 @@ export declare const getOpenTrades: () => Promise<{
     sellDigest: string | null;
     suiSpentAmount: string;
     suiReceivedAmount: string | null;
+<<<<<<< HEAD
     dex: string;
     poolAddress: string | null;
     amountA: string | null;
@@ -103,5 +165,10 @@ export declare const getOpenTrades: () => Promise<{
     scamProbability: number;
     status: string;
     timestamp: Date;
+=======
+    poolAddress: string | null;
+    suiIsA: boolean;
+    scamProbability: number;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
 }[]>;
 export {};

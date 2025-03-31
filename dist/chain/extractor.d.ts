@@ -1,5 +1,6 @@
 import { SUPPORTED_DEX } from "./config.js";
 import { SuiTransactionBlockResponse, SuiEvent } from "@mysten/sui/client";
+<<<<<<< HEAD
 export interface ParsedPoolData {
     poolId: string;
     coinA: string;
@@ -59,12 +60,29 @@ export interface ExtractedTransactionInfo {
     inputAmount: number;
     outputAmount: number;
     timestamp: number;
+=======
+export type ParsedPoolData = {
+    coinA: string;
+    coinB: string;
+    amountA: string;
+    amountB: string;
+    poolId: string;
+    liquidity: string;
+    dex: SUPPORTED_DEX;
+    creator?: string;
+};
+export declare function getTransactionInfo(txDigest: string, dex: string): Promise<{
+    inputAmount: number;
+    outputAmount: number;
+    timestamp: string | null | undefined;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
     success: boolean;
     coinA: string;
     coinB: string;
     amountA: string;
     amountB: string;
     poolId: string;
+<<<<<<< HEAD
     dex?: string;
     slippage?: number;
     gasFee?: number;
@@ -89,3 +107,8 @@ export declare function decomposeTransactionByDex(tx: SuiTransactionBlockRespons
  * Holt erweiterte Pool-Daten mit On-Chain-Analytics
  */
 export declare function getEnhancedPoolData(poolId: string): Promise<ParsedPoolData | null>;
+=======
+} | null>;
+export declare function decomposeTransactionByDex(tx: SuiTransactionBlockResponse, dex?: SUPPORTED_DEX): ParsedPoolData | null;
+export declare function decomposeEventData(event: SuiEvent): ParsedPoolData | null;
+>>>>>>> debdeb98eebd4a8a7697c3bfdb13b7717093acca
