@@ -144,9 +144,7 @@ interface ExtendedGetAllCoinsParams {
 }
 
 export async function checkPoolSecurity(
-  poolId: string,
-  dex: string
-): Promise<SecurityCheckResult> {
+poolId: string, dex: string, p0: string): Promise<SecurityCheckResult> {
   try {
     // Führe alle Sicherheitsprüfungen parallel aus
     const [

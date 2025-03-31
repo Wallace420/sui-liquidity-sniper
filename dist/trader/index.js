@@ -90,7 +90,11 @@ async function tryAgg(_coinIn, _coinOut, amount) {
 }
 export async function trade(digest, dex = 'Cetus') {
     try {
-        const info = await getTransactionInfo(digest, dex);
+        // Parallele Ausführung der Transaktionsinfo-Abfrage und Gas-Berechnung
+        const [info, optimalGas] = await Promise.all([
+            getTransactionInfo(digest, dex),
+            calculateGasForMysticeti()
+        ]);
         if (!info || !info.coinA || !info.coinB || !info.amountA || !info.amountB || !info.poolId) {
             console.error("Unvollständige Pool-Daten:", info);
             return;
@@ -109,34 +113,41 @@ export async function trade(digest, dex = 'Cetus') {
         const _coinOut = poolData.coinB;
         const amount = BigInt(1 * 1e9); // 1 SUI
         const a2b = true;
+        // Schnelle Vorfilterung basierend auf Mindestliquidität
+        const minLiquiditySUI = 300; // Mindestliquidität in SUI
+        const liquiditySUI = Number(poolData[a2b ? 'amountA' : 'amountB']) / Math.pow(10, 9);
+        if (liquiditySUI < minLiquiditySUI) {
+            console.log(`Pool zu klein: ${liquiditySUI.toFixed(2)} SUI < ${minLiquiditySUI} SUI`);
+            return;
+        }
         let txId = '';
         console.log("BUYING, START TRADE::", _coinIn, _coinOut, amount);
-        if (Number(poolData[a2b ? 'amountA' : 'amountB']) / Math.pow(10, 9) >= 300) {
-            switch (dex) {
-                case 'Cetus':
-                    const cetusTxId = await buyDirectCetus(poolData);
-                    txId = typeof cetusTxId === 'string' ? cetusTxId : '';
-                    if (txId) {
-                        await buyAction(txId, poolData);
-                    }
-                    break;
-                case 'BlueMove':
-                    const bluemoveTxId = await tryAgg("0x2::sui::SUI", _coinOut, amount.toString());
-                    txId = typeof bluemoveTxId === 'string' ? bluemoveTxId : '';
-                    if (txId) {
-                        await buyAction(txId, poolData);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        else {
-            console.log("Pool too small");
+        // Optimierte DEX-spezifische Handelslogik
+        switch (dex) {
+            case 'Cetus':
+                // Direkter Kauf über Cetus
+                const cetusTxId = await buyDirectCetus(poolData);
+                txId = typeof cetusTxId === 'string' ? cetusTxId : '';
+                if (txId) {
+                    // Kauf-Aktion ausführen
+                    await buyAction(txId, poolData);
+                }
+                break;
+            case 'BlueMove':
+                // Optimierter Kauf über Aggregator
+                const bluemoveTxId = await tryAgg("0x2::sui::SUI", _coinOut, amount.toString());
+                txId = typeof bluemoveTxId === 'string' ? bluemoveTxId : '';
+                if (txId) {
+                    await buyAction(txId, poolData);
+                }
+                break;
+            default:
+                console.log(`Nicht unterstützter DEX: ${dex}`);
+                break;
         }
     }
     catch (error) {
-        console.error("Trade error:", error);
+        console.error("Trade-Fehler:", error);
     }
 }
 function lockInTunnel(assets) {

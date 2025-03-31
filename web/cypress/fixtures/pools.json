@@ -1,0 +1,117 @@
+[
+  {
+    "id": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "name": "SUI-USDC",
+    "token0": {
+      "symbol": "SUI",
+      "name": "Sui",
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+      "decimals": 9
+    },
+    "token1": {
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "address": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890::usdc::USDC",
+      "decimals": 6
+    },
+    "fee": 0.003,
+    "tvl": 1250000,
+    "volume24h": 450000,
+    "price": 0.85,
+    "priceChange24h": 0.05,
+    "createdAt": "2023-11-15T12:00:00Z",
+    "lastUpdated": "2023-12-01T14:30:00Z"
+  },
+  {
+    "id": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+    "name": "SUI-USDT",
+    "token0": {
+      "symbol": "SUI",
+      "name": "Sui",
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+      "decimals": 9
+    },
+    "token1": {
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "address": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef::usdt::USDT",
+      "decimals": 6
+    },
+    "fee": 0.003,
+    "tvl": 980000,
+    "volume24h": 320000,
+    "price": 0.84,
+    "priceChange24h": 0.04,
+    "createdAt": "2023-11-16T10:00:00Z",
+    "lastUpdated": "2023-12-01T14:30:00Z"
+  },
+  {
+    "id": "0x7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456",
+    "name": "ETH-SUI",
+    "token0": {
+      "symbol": "ETH",
+      "name": "Ethereum",
+      "address": "0x7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456::eth::ETH",
+      "decimals": 18
+    },
+    "token1": {
+      "symbol": "SUI",
+      "name": "Sui",
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+      "decimals": 9
+    },
+    "fee": 0.003,
+    "tvl": 2500000,
+    "volume24h": 750000,
+    "price": 0.00042,
+    "priceChange24h": -0.00001,
+    "createdAt": "2023-11-10T08:00:00Z",
+    "lastUpdated": "2023-12-01T14:30:00Z"
+  },
+  {
+    "id": "0x567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234",
+    "name": "BTC-SUI",
+    "token0": {
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "address": "0x567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234::btc::BTC",
+      "decimals": 8
+    },
+    "token1": {
+      "symbol": "SUI",
+      "name": "Sui",
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+      "decimals": 9
+    },
+    "fee": 0.003,
+    "tvl": 3800000,
+    "volume24h": 920000,
+    "price": 0.000025,
+    "priceChange24h": 0.000001,
+    "createdAt": "2023-11-05T14:00:00Z",
+    "lastUpdated": "2023-12-01T14:30:00Z"
+  },
+  {
+    "id": "0xdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abc",
+    "name": "CETUS-SUI",
+    "token0": {
+      "symbol": "CETUS",
+      "name": "Cetus",
+      "address": "0xdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abc::cetus::CETUS",
+      "decimals": 9
+    },
+    "token1": {
+      "symbol": "SUI",
+      "name": "Sui",
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+      "decimals": 9
+    },
+    "fee": 0.003,
+    "tvl": 750000,
+    "volume24h": 280000,
+    "price": 1.25,
+    "priceChange24h": 0.15,
+    "createdAt": "2023-11-20T09:00:00Z",
+    "lastUpdated": "2023-12-01T14:30:00Z"
+  }
+] 

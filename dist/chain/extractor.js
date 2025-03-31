@@ -1,51 +1,123 @@
 import { SUI } from "./config.js";
+import { logDebug, logError } from "../utils/logger.js";
 // Constants
 const CETUS_CREATE_EVENT = '0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::factory::CreatePoolEvent';
 const CETUS_ADD_LIQUIDITY_EVENT = '0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::pool::AddLiquidityEvent';
 const BLUEMOVE_CREATE_EVENT = '0xb24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::swap::Created_Pool_Event';
 const BLUEMOVE_ADD_LIQUIDITY_EVENT = '0xb24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::swap::Add_Liquidity_Pool';
+// Cache für Token-Metadaten
+const tokenMetadataCache = new Map();
+const poolDataCache = new Map();
+/**
+ * Holt detaillierte Informationen zu einer Transaktion
+ * @param txDigest Transaktions-Hash
+ * @param dex DEX-Name
+ * @returns Extrahierte Transaktionsinformationen
+ */
 export async function getTransactionInfo(txDigest, dex) {
     try {
+        logDebug('Hole Transaktionsinformationen', { txDigest, dex });
         const tx = await SUI.client.getTransactionBlock({
             digest: txDigest,
             options: {
                 showEffects: true,
                 showInput: true,
                 showEvents: true,
+                showBalanceChanges: true,
+                showObjectChanges: true,
             }
         });
-        // Erweiterte Extraktion für den Backtest
+        if (!tx || !tx.events) {
+            logError('Keine Transaktionsdaten gefunden', { txDigest });
+            return null;
+        }
+        // Extrahiere Zeitstempel
+        const timestamp = tx.timestampMs || Date.now();
+        // Extrahiere Gebühren
+        const gasFee = tx.effects?.gasUsed ?
+            (Number(tx.effects.gasUsed.computationCost) +
+                Number(tx.effects.gasUsed.storageCost) -
+                Number(tx.effects.gasUsed.storageRebate)) / 1e9 :
+            undefined;
+        // Extrahiere Balance-Änderungen für Slippage-Berechnung
+        const balanceChanges = tx.balanceChanges || [];
+        const suiChanges = balanceChanges.filter(bc => bc.coinType === '0x2::sui::SUI');
+        const inputAmount = suiChanges.reduce((sum, bc) => {
+            const amount = Number(bc.amount);
+            return amount < 0 ? sum + Math.abs(amount) : sum;
+        }, 0) / 1e9;
+        // Extrahiere Pool-Daten
+        let poolData = null;
+        if (dex.toLowerCase() === 'cetus') {
+            poolData = parseCetusPoolData(tx);
+        }
+        else if (dex.toLowerCase() === 'bluemove') {
+            poolData = parseBlueMovePooData(tx);
+        }
+        if (!poolData) {
+            // Fallback: Extrahiere Daten aus Events
+            poolData = decomposeEventData(tx.events[0]);
+        }
+        if (!poolData) {
+            logError('Konnte keine Pool-Daten extrahieren', { txDigest });
+            return null;
+        }
+        // Berechne Output-Menge
+        const outputAmount = Math.random() * inputAmount * 1.2; // Simuliert für Backtest
+        // Berechne Slippage
+        const expectedOutput = inputAmount * 1.1; // Simuliert für Backtest
+        const slippage = ((expectedOutput - outputAmount) / expectedOutput) * 100;
+        // Berechne Price Impact
+        const priceImpact = Math.random() * 5; // Simuliert für Backtest
         return {
-            inputAmount: Math.random() * 1000, // Simulierte Werte für den Backtest
-            outputAmount: Math.random() * 1200,
-            timestamp: tx.timestampMs,
-            success: true,
-            // Hinzufügen der fehlenden Eigenschaften
-            coinA: "0x2::sui::SUI",
-            coinB: "0x1234::coin::DUMMYCOIN",
-            amountA: (Math.random() * 1000).toString(),
-            amountB: (Math.random() * 1200).toString(),
-            poolId: "0x" + Math.random().toString(16).substring(2, 42)
+            inputAmount,
+            outputAmount,
+            timestamp: Number(timestamp),
+            success: tx.effects?.status?.status === 'success',
+            coinA: poolData.coinA,
+            coinB: poolData.coinB,
+            amountA: poolData.amountA.toString(),
+            amountB: poolData.amountB.toString(),
+            poolId: poolData.poolId,
+            dex: poolData.dex,
+            slippage,
+            gasFee,
+            priceImpact
         };
     }
     catch (error) {
-        console.error('Failed to get transaction info:', error);
+        logError('Fehler beim Abrufen der Transaktionsinformationen', {
+            error: error instanceof Error ? error.message : 'Unbekannter Fehler',
+            txDigest
+        });
         return null;
     }
 }
+/**
+ * Findet ein Event eines bestimmten Typs in einer Liste von Events
+ */
 function findEvent(events, eventType) {
     return events.find((e) => e.type === eventType);
 }
+/**
+ * Findet den Creator aus Balance-Änderungen
+ */
 function findCreatorFromBalanceChanges(balanceChanges) {
     const creatorBalance = balanceChanges.find((b) => b.coinType.endsWith("::sui::SUI") && Number(b.amount) < 0);
     return creatorBalance?.owner?.AddressOwner;
 }
+/**
+ * Validiert, ob alle erforderlichen Felder in einem Objekt vorhanden sind
+ */
 function validateRequiredFields(data, fields) {
     return fields.every(field => {
         const value = data[field];
         return value !== undefined && value !== null && value !== '';
     });
 }
+/**
+ * Parst Pool-Daten von Cetus
+ */
 function parseCetusPoolData(tx) {
     try {
         const createEvent = findEvent(tx.events, CETUS_CREATE_EVENT);
@@ -62,7 +134,22 @@ function parseCetusPoolData(tx) {
         const creator = tx.balanceChanges ?
             findCreatorFromBalanceChanges(tx.balanceChanges) :
             undefined;
-        return {
+        // Extrahiere Token-Metadaten
+        const coinTypeA = createEvent.parsedJson.coin_type_a;
+        const coinTypeB = createEvent.parsedJson.coin_type_b;
+        // Bestimme, welcher Coin SUI ist und welcher der Token
+        const isSuiA = coinTypeA === '0x2::sui::SUI';
+        const tokenType = isSuiA ? coinTypeB : coinTypeA;
+        // Hole Token-Metadaten (asynchron im Hintergrund)
+        fetchTokenMetadata(tokenType).catch(err => logError('Fehler beim Abrufen der Token-Metadaten', { error: String(err), tokenType }));
+        // Berechne Liquidität in SUI
+        const amountA = addLiquidityEvent.parsedJson.amount_a;
+        const amountB = addLiquidityEvent.parsedJson.amount_b;
+        const suiAmount = isSuiA ? Number(amountA) : Number(amountB);
+        const tokenAmount = isSuiA ? Number(amountB) : Number(amountA);
+        // Hole Token-Metadaten aus dem Cache
+        const tokenMetadata = tokenMetadataCache.get(tokenType);
+        const poolData = {
             coinA: createEvent.parsedJson.coin_type_a,
             coinB: createEvent.parsedJson.coin_type_b,
             amountA: addLiquidityEvent.parsedJson.amount_a,
@@ -70,14 +157,33 @@ function parseCetusPoolData(tx) {
             poolId: createEvent.parsedJson.pool_id,
             liquidity: addLiquidityEvent.parsedJson.after_liquidity,
             dex: 'Cetus',
-            creator
+            dexType: 'Cetus',
+            creator,
+            tokenSymbol: tokenMetadata?.symbol,
+            tokenName: tokenMetadata?.name,
+            tokenAddress: tokenType,
+            createdAt: tx.timestampMs ? new Date(Number(tx.timestampMs)) : new Date(),
+            metrics: {
+                holders: 0,
+                transactions: 0,
+                marketCap: 0,
+                fullyDilutedValue: 0
+            }
         };
+        // Speichere im Cache
+        poolDataCache.set(poolData.poolId, poolData);
+        return poolData;
     }
     catch (error) {
-        console.error('Error parsing Cetus pool data:', error);
+        logError('Fehler beim Parsen der Cetus Pool-Daten', {
+            error: error instanceof Error ? error.message : 'Unbekannter Fehler'
+        });
         return null;
     }
 }
+/**
+ * Parst Pool-Daten von BlueMove
+ */
 function parseBlueMovePooData(tx) {
     try {
         const createEvent = findEvent(tx.events, BLUEMOVE_CREATE_EVENT);
@@ -89,86 +195,293 @@ function parseBlueMovePooData(tx) {
         if (Number(createEvent.parsedJson.lsp_balance) > 0) {
             return null;
         }
-        const requiredCreateFields = ['token_x_name', 'token_y_name', 'pool_id', 'creator'];
-        const requiredAddFields = ['token_x_amount_in', 'token_y_amount_in', 'lsp_balance'];
-        if (!validateRequiredFields(createEvent.parsedJson, requiredCreateFields) ||
-            !validateRequiredFields(addLiquidityEvent.parsedJson, requiredAddFields)) {
-            throw new Error('Missing required fields in BlueMove events');
-        }
-        return {
-            coinA: createEvent.parsedJson.token_x_name,
-            coinB: createEvent.parsedJson.token_y_name,
-            amountA: addLiquidityEvent.parsedJson.token_x_amount_in,
-            amountB: addLiquidityEvent.parsedJson.token_y_amount_in,
+        const creator = tx.balanceChanges ?
+            findCreatorFromBalanceChanges(tx.balanceChanges) :
+            undefined;
+        // Extrahiere Token-Metadaten
+        const coinTypeA = createEvent.parsedJson.coin_a;
+        const coinTypeB = createEvent.parsedJson.coin_b;
+        // Bestimme, welcher Coin SUI ist und welcher der Token
+        const isSuiA = coinTypeA === '0x2::sui::SUI';
+        const tokenType = isSuiA ? coinTypeB : coinTypeA;
+        // Hole Token-Metadaten (asynchron im Hintergrund)
+        fetchTokenMetadata(tokenType).catch(err => logError('Fehler beim Abrufen der Token-Metadaten', { error: String(err), tokenType }));
+        // Berechne Liquidität in SUI
+        const amountA = addLiquidityEvent.parsedJson.coin_a_amount;
+        const amountB = addLiquidityEvent.parsedJson.coin_b_amount;
+        const suiAmount = isSuiA ? Number(amountA) : Number(amountB);
+        const tokenAmount = isSuiA ? Number(amountB) : Number(amountA);
+        // Hole Token-Metadaten aus dem Cache
+        const tokenMetadata = tokenMetadataCache.get(tokenType);
+        const poolData = {
+            coinA: coinTypeA,
+            coinB: coinTypeB,
+            amountA: amountA,
+            amountB: amountB,
             poolId: createEvent.parsedJson.pool_id,
-            liquidity: addLiquidityEvent.parsedJson.lsp_balance,
+            liquidity: {
+                sui: suiAmount / 1e9,
+                token: tokenAmount / Math.pow(10, tokenMetadata?.decimals || 9)
+            },
             dex: 'BlueMove',
-            creator: createEvent.parsedJson.creator
+            dexType: 'BlueMove',
+            creator,
+            tokenSymbol: tokenMetadata?.symbol,
+            tokenName: tokenMetadata?.name,
+            tokenAddress: tokenType,
+            createdAt: tx.timestampMs ? new Date(Number(tx.timestampMs)) : new Date(),
+            metrics: {
+                holders: 0,
+                transactions: 0,
+                marketCap: 0,
+                fullyDilutedValue: 0
+            }
         };
+        // Speichere im Cache
+        poolDataCache.set(poolData.poolId, poolData);
+        return poolData;
     }
     catch (error) {
-        console.error('Error parsing BlueMove pool data:', error);
+        logError('Fehler beim Parsen der BlueMove Pool-Daten', {
+            error: error instanceof Error ? error.message : 'Unbekannter Fehler'
+        });
         return null;
     }
 }
-export function decomposeTransactionByDex(tx, dex = 'Cetus') {
-    if (!tx.events) {
-        console.error('Transaction has no events');
+/**
+ * Extrahiert Pool-Daten aus einem Event
+ */
+export function decomposeEventData(event) {
+    try {
+        if (!event || !event.type) {
+            return null;
+        }
+        // Bestimme DEX-Typ basierend auf Event-Typ
+        let dexType = 'Unknown';
+        let dex = 'Unknown';
+        if (event.type.includes('cetus') || event.type.includes('1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb')) {
+            dexType = 'Cetus';
+            dex = 'Cetus';
+        }
+        else if (event.type.includes('bluemove') || event.type.includes('b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9')) {
+            dexType = 'BlueMove';
+            dex = 'BlueMove';
+        }
+        else if (event.type.includes('turbos')) {
+            dexType = 'Turbos';
+            dex = 'Turbos';
+        }
+        else if (event.type.includes('kriya')) {
+            dexType = 'Kriya';
+            dex = 'Kriya';
+        }
+        // Parse Event-Daten basierend auf DEX-Typ
+        const parsedJson = event.parsedJson || {};
+        // Extrahiere gemeinsame Felder
+        const poolId = parsedJson.pool_id || parsedJson.poolId || '';
+        const coinA = parsedJson.coin_type_a || parsedJson.coin_a || parsedJson.coinTypeA || '';
+        const coinB = parsedJson.coin_type_b || parsedJson.coin_b || parsedJson.coinTypeB || '';
+        const amountA = parsedJson.amount_a || parsedJson.coin_a_amount || parsedJson.amountA || '0';
+        const amountB = parsedJson.amount_b || parsedJson.coin_b_amount || parsedJson.amountB || '0';
+        // Bestimme, welcher Coin SUI ist und welcher der Token
+        const isSuiA = coinA === '0x2::sui::SUI';
+        const tokenType = isSuiA ? coinB : coinA;
+        // Hole Token-Metadaten (asynchron im Hintergrund)
+        fetchTokenMetadata(tokenType).catch(err => logError('Fehler beim Abrufen der Token-Metadaten', { error: String(err), tokenType }));
+        // Berechne Liquidität in SUI
+        const suiAmount = isSuiA ? Number(amountA) : Number(amountB);
+        const tokenAmount = isSuiA ? Number(amountB) : Number(amountA);
+        // Hole Token-Metadaten aus dem Cache
+        const tokenMetadata = tokenMetadataCache.get(tokenType);
+        const poolData = {
+            poolId,
+            coinA,
+            coinB,
+            amountA,
+            amountB,
+            liquidity: {
+                sui: suiAmount / 1e9,
+                token: tokenAmount / Math.pow(10, tokenMetadata?.decimals || 9)
+            },
+            dex,
+            dexType,
+            tokenSymbol: tokenMetadata?.symbol,
+            tokenName: tokenMetadata?.name,
+            tokenAddress: tokenType,
+            createdAt: event.timestampMs ? new Date(Number(event.timestampMs)) : new Date()
+        };
+        // Speichere im Cache
+        if (poolId) {
+            poolDataCache.set(poolId, poolData);
+        }
+        return poolData;
+    }
+    catch (error) {
+        logError('Fehler beim Extrahieren der Event-Daten', {
+            error: error instanceof Error ? error.message : 'Unbekannter Fehler',
+            eventType: event.type
+        });
         return null;
     }
+}
+/**
+ * Extrahiert Pool-Daten aus einer Transaktion basierend auf dem DEX
+ */
+export function decomposeTransactionByDex(tx, dex) {
     try {
+        if (!tx || !tx.events || tx.events.length === 0) {
+            return null;
+        }
         switch (dex) {
             case 'Cetus':
                 return parseCetusPoolData(tx);
             case 'BlueMove':
                 return parseBlueMovePooData(tx);
             default:
-                console.error(`Unsupported DEX: ${dex}`);
-                return null;
+                // Versuche, Daten aus dem ersten Event zu extrahieren
+                return decomposeEventData(tx.events[0]);
         }
     }
     catch (error) {
-        console.error(`Error decomposing transaction for ${dex}:`, error);
+        logError('Fehler beim Extrahieren der Transaktionsdaten', {
+            error: error instanceof Error ? error.message : 'Unbekannter Fehler',
+            dex
+        });
         return null;
     }
 }
-export function decomposeEventData(event) {
+/**
+ * Holt Token-Metadaten und speichert sie im Cache
+ */
+async function fetchTokenMetadata(tokenType) {
+    // Prüfe Cache
+    if (tokenMetadataCache.has(tokenType)) {
+        return tokenMetadataCache.get(tokenType) || null;
+    }
     try {
-        const parsedJson = event.parsedJson;
-        if (!parsedJson) {
-            throw new Error('Event hat keine parsedJson Daten');
-        }
-        // Bestimme DEX-Typ basierend auf Event-Typ
-        const isCetus = event.type.includes('0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb');
-        const isBlueMove = event.type.includes('0xb24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9');
-        if (isCetus) {
-            return {
-                coinA: parsedJson.coin_type_a || '',
-                coinB: parsedJson.coin_type_b || '',
-                amountA: parsedJson.amount_a?.toString() || '0',
-                amountB: parsedJson.amount_b?.toString() || '0',
-                poolId: parsedJson.pool_id || '',
-                liquidity: parsedJson.liquidity?.toString() || '0',
-                dex: 'Cetus',
-                creator: event.sender
-            };
-        }
-        if (isBlueMove) {
-            return {
-                coinA: parsedJson.token_x_name || '',
-                coinB: parsedJson.token_y_name || '',
-                amountA: parsedJson.token_x_amount?.toString() || '0',
-                amountB: parsedJson.token_y_amount?.toString() || '0',
-                poolId: parsedJson.pool_id || '',
-                liquidity: parsedJson.lsp_balance?.toString() || '0',
-                dex: 'BlueMove',
-                creator: event.sender
-            };
-        }
-        return null;
+        // Simuliere Metadaten-Abruf für den Backtest
+        const metadata = {
+            decimals: 9,
+            name: `Token ${tokenType.substring(0, 8)}`,
+            symbol: `TKN${tokenType.substring(0, 4)}`,
+            description: 'Ein SUI Token',
+            verified: Math.random() > 0.7,
+            createdAt: Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000)
+        };
+        // Speichere im Cache
+        tokenMetadataCache.set(tokenType, metadata);
+        return metadata;
     }
     catch (error) {
-        console.error('Fehler beim Parsen des Events:', error);
+        logError('Fehler beim Abrufen der Token-Metadaten', {
+            error: error instanceof Error ? error.message : 'Unbekannter Fehler',
+            tokenType
+        });
+        return null;
+    }
+}
+/**
+ * Holt erweiterte Pool-Daten mit On-Chain-Analytics
+ */
+export async function getEnhancedPoolData(poolId) {
+    // Prüfe Cache
+    if (poolDataCache.has(poolId)) {
+        const cachedData = poolDataCache.get(poolId);
+        // Wenn die Daten vollständig sind, gib sie zurück
+        if (cachedData?.metrics?.holders && cachedData?.metrics?.transactions) {
+            return cachedData;
+        }
+    }
+    try {
+        // Hole Basis-Pool-Daten
+        const poolData = poolDataCache.get(poolId) || {
+            poolId,
+            coinA: '',
+            coinB: '',
+            amountA: '0',
+            amountB: '0',
+            dex: 'Unknown'
+        };
+        // Simuliere On-Chain-Analytics für den Backtest
+        const holders = Math.floor(Math.random() * 1000) + 50;
+        const transactions = Math.floor(Math.random() * 5000) + 100;
+        const volume24h = Math.random() * 10000;
+        const priceChange24h = (Math.random() * 40) - 20; // -20% bis +20%
+        const buyTax = Math.random() * 5;
+        const sellTax = Math.random() * 10;
+        const liquidityLocked = Math.random() > 0.3;
+        const lockDuration = liquidityLocked ? Math.floor(Math.random() * 365) + 30 : 0;
+        // Simuliere Preis-Historie
+        const priceHistory = [];
+        const now = Date.now();
+        const basePrice = Math.random() * 0.001;
+        for (let i = 0; i < 24; i++) {
+            const timestamp = now - (23 - i) * 60 * 60 * 1000;
+            const volatility = Math.random() * 0.2 - 0.1; // -10% bis +10%
+            const price = basePrice * (1 + volatility);
+            priceHistory.push({ timestamp, price });
+        }
+        // Simuliere Volumen-Historie
+        const volumeHistory = [];
+        const baseVolume = Math.random() * 5000;
+        for (let i = 0; i < 24; i++) {
+            const timestamp = now - (23 - i) * 60 * 60 * 1000;
+            const volatility = Math.random() * 1.5 + 0.5; // 0.5x bis 2x
+            const volume = baseVolume * volatility;
+            volumeHistory.push({ timestamp, volume });
+        }
+        // Simuliere Holder-Verteilung
+        const holderDistribution = {
+            'Top 1': Math.random() * 30 + 10, // 10-40%
+            'Top 10': Math.random() * 20 + 20, // 20-40%
+            'Top 50': Math.random() * 20 + 10, // 10-30%
+            'Rest': Math.random() * 30 + 10 // 10-40%
+        };
+        // Simuliere Sicherheits-Metriken
+        const riskScore = Math.floor(Math.random() * 100);
+        const isHoneypot = Math.random() < 0.1;
+        const rugPullRisk = Math.floor(Math.random() * 100);
+        const ownershipRenounced = Math.random() > 0.7;
+        const mintingEnabled = Math.random() < 0.3;
+        const previousScams = Math.floor(Math.random() * 3);
+        // Erweitere Pool-Daten
+        const enhancedPoolData = {
+            ...poolData,
+            metrics: {
+                ...poolData.metrics,
+                holders,
+                transactions,
+                volume24h,
+                priceChange24h,
+                buyTax,
+                sellTax,
+                liquidityLocked,
+                lockDuration
+            },
+            analytics: {
+                priceHistory,
+                volumeHistory,
+                holderDistribution,
+                tradingPairs: ['SUI', 'USDC', 'USDT']
+            },
+            security: {
+                riskScore,
+                isHoneypot,
+                rugPullRisk,
+                ownershipRenounced,
+                mintingEnabled,
+                previousScams
+            }
+        };
+        // Speichere im Cache
+        poolDataCache.set(poolId, enhancedPoolData);
+        return enhancedPoolData;
+    }
+    catch (error) {
+        logError('Fehler beim Abrufen erweiterter Pool-Daten', {
+            error: error instanceof Error ? error.message : 'Unbekannter Fehler',
+            poolId
+        });
         return null;
     }
 }

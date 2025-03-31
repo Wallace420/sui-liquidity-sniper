@@ -18,7 +18,7 @@ function asExtendedEffects(effects) {
 }
 // Cache für Scam-Checks
 const scamCheckCache = new Map();
-export async function checkPoolSecurity(poolId, dex) {
+export async function checkPoolSecurity(poolId, dex, p0) {
     try {
         // Führe alle Sicherheitsprüfungen parallel aus
         const [lpStatus, honeypotStatus, contractAnalysis, devWalletAnalysis, tokenAnalysis, poolMetrics] = await Promise.all([

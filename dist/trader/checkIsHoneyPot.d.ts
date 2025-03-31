@@ -1,1 +1,4 @@
-export declare function checkIsHoneyPot(coin: string): Promise<boolean>;
+export declare function checkIsHoneyPot(poolData: any): Promise<{
+    isHoneypot: boolean;
+    reason?: string;
+}>;

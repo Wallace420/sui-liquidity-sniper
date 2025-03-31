@@ -142,60 +142,52 @@ export function checkIsBlackListed(coinType) {
     return BLACKLISTED_TOKENS.includes(coinType);
 }
 export async function scamProbability(transactionInfo) {
-    // Erweiterte Scam-Erkennung für den Backtest
-    const randomScore = Math.random() * 100;
-    // Erweiterte Faktoren
+    // Verbesserte Scam-Erkennung mit gewichteten Faktoren
+    // Basisrisiko (zufällig, aber mit Gewichtung)
+    const baseRisk = Math.random() * 30; // Maximal 30% Basisrisiko
+    // Erweiterte Faktoren mit besserer Gewichtung
     const factors = {
-        // Profitabilität
-        profitMargin: (transactionInfo.outputAmount - transactionInfo.inputAmount) / transactionInfo.inputAmount,
-        // Zeitbasierte Risiken
-        timeBasedRisk: Math.random(), // Simuliert das Alter des Pools
-        timeSinceCreation: Date.now() - (transactionInfo.timestamp || Date.now()),
-        // Volumen und Liquidität
-        volumeRisk: Math.random(), // Simuliert das Handelsvolumen
-        liquidityDepth: Math.min(1.0, transactionInfo.inputAmount / 10000), // Normalisiert auf 10k
+        // Profitabilität - Hohe Profitmargen sind verdächtig
+        profitMargin: transactionInfo.outputAmount && transactionInfo.inputAmount
+            ? (transactionInfo.outputAmount - transactionInfo.inputAmount) / transactionInfo.inputAmount
+            : Math.random() * 0.5,
+        // Zeitbasierte Risiken - Neue Pools sind risikoreicher
+        poolAge: transactionInfo.timestamp
+            ? Math.min(1.0, (Date.now() - transactionInfo.timestamp) / (7 * 24 * 60 * 60 * 1000)) // Normalisiert auf 1 Woche
+            : Math.random() * 0.2, // Sehr niedriges Alter simulieren
+        // Volumen und Liquidität - Niedrige Werte sind verdächtig
+        liquidityDepth: transactionInfo.amountA && transactionInfo.amountB
+            ? Math.min(1.0, (Number(transactionInfo.amountA) + Number(transactionInfo.amountB)) / 10000)
+            : Math.random() * 0.3,
         // Token-Metriken
-        tokenAge: Math.random(), // Simuliert das Alter des Tokens
-        holderCount: Math.floor(Math.random() * 1000), // Simuliert die Anzahl der Token-Holder
+        tokenNameRisk: Math.random() * 0.5, // Simuliert Risiko basierend auf Token-Namen
         // Entwickler/Team-Metriken
-        developerActivity: Math.random(), // Simuliert die Entwickleraktivität
-        socialMediaPresence: Math.random(), // Simuliert die Social-Media-Präsenz
+        developerActivity: Math.random(), // Simuliert Entwickleraktivität
         // Marktmetriken
-        marketCap: Math.random() * 1000000, // Simuliert die Marktkapitalisierung
         priceVolatility: Math.random() * 0.5 + 0.5, // 50-100% Volatilität
     };
-    // Gewichtete Berechnung mit erweiterten Faktoren
-    const score = 
-    // Basisrisiko (30%)
-    randomScore * 0.3 +
-        // Profitabilitätsrisiken (20%)
-        (factors.profitMargin > 0.5 ? 30 : 0) * 0.2 +
-        // Zeitbasierte Risiken (15%)
-        (factors.timeBasedRisk < 0.2 ? 20 : 0) * 0.15 +
-        (factors.timeSinceCreation < 24 * 60 * 60 * 1000 ? 15 : 0) * 0.15 +
-        // Volumen und Liquiditätsrisiken (15%)
-        (factors.volumeRisk < 0.3 ? 20 : 0) * 0.15 +
-        (factors.liquidityDepth < 0.2 ? 25 : 0) * 0.15 +
+    // Gewichtete Berechnung mit verbesserten Faktoren
+    let score = 
+    // Basisrisiko (20%)
+    baseRisk * 0.2 +
+        // Profitabilitätsrisiken (15%)
+        (factors.profitMargin > 0.5 ? 50 : factors.profitMargin > 0.3 ? 30 : 0) * 0.15 +
+        // Zeitbasierte Risiken (25%)
+        (factors.poolAge < 0.1 ? 70 : factors.poolAge < 0.3 ? 40 : factors.poolAge < 0.5 ? 20 : 0) * 0.25 +
+        // Liquiditätsrisiken (25%)
+        (factors.liquidityDepth < 0.1 ? 80 : factors.liquidityDepth < 0.3 ? 40 : factors.liquidityDepth < 0.5 ? 20 : 0) * 0.25 +
         // Token-Metriken (10%)
-        (factors.tokenAge < 0.3 ? 15 : 0) * 0.1 +
-        (factors.holderCount < 100 ? 20 : 0) * 0.1 +
-        // Entwickler/Team-Metriken (5%)
-        (factors.developerActivity < 0.2 ? 10 : 0) * 0.05 +
-        (factors.socialMediaPresence < 0.3 ? 10 : 0) * 0.05 +
-        // Marktmetriken (5%)
-        (factors.marketCap < 100000 ? 15 : 0) * 0.05 +
-        (factors.priceVolatility > 0.8 ? 15 : 0) * 0.05;
-    // Zusätzliche Risikomultiplikatoren
-    const riskMultipliers = {
-        highProfitRisk: factors.profitMargin > 1.0 ? 1.2 : 1.0, // 20% höheres Risiko bei sehr hohen Gewinnen
-        lowLiquidityRisk: factors.liquidityDepth < 0.1 ? 1.3 : 1.0, // 30% höheres Risiko bei sehr niedriger Liquidität
-        newTokenRisk: factors.tokenAge < 0.1 ? 1.25 : 1.0, // 25% höheres Risiko bei sehr neuen Tokens
-    };
-    // Anwendung der Multiplikatoren
-    const finalScore = score *
-        riskMultipliers.highProfitRisk *
-        riskMultipliers.lowLiquidityRisk *
-        riskMultipliers.newTokenRisk;
-    return Math.min(100, Math.max(0, finalScore));
+        (factors.tokenNameRisk > 0.7 ? 60 : factors.tokenNameRisk > 0.4 ? 30 : 0) * 0.1 +
+        // Volatilitätsrisiko (5%)
+        (factors.priceVolatility > 0.8 ? 40 : factors.priceVolatility > 0.6 ? 20 : 0) * 0.05;
+    // Zusätzliche Risikofaktoren für bestimmte Bedingungen
+    if (transactionInfo.coinA && transactionInfo.coinA.includes("test")) {
+        score += 20; // Test-Token sind verdächtig
+    }
+    if (transactionInfo.coinB && transactionInfo.coinB.includes("test")) {
+        score += 20; // Test-Token sind verdächtig
+    }
+    // Begrenze den Score auf 0-100
+    return Math.min(100, Math.max(0, score));
 }
 //# sourceMappingURL=checkscam.js.map

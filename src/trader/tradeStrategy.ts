@@ -16,6 +16,7 @@ import { createBlueMoveBuyTransaction, createBlueMoveSellTransaction } from './d
 // @ts-ignore: Keine Typdefinition für bn.js
 import BN from 'bn.js';
 import { LIVE_TRADING_CONFIG } from "../config/trading_config.js";
+import { TradeData } from "../utils/dashboard.js";
 
 // Constants
 const MAX_RETRIES = 3;
@@ -95,6 +96,67 @@ interface ExtendedLogMetadata {
   buyTxId?: string;
   sellTxId?: string;
   [key: string]: any;
+}
+
+// Deklariere sellAction vor der Verwendung
+async function sellAction(tradingInfo: TradingInfo): Promise<void> {
+  let tx: string = '';
+
+  console.log("SELL ACTION::", tradingInfo);
+
+  try {
+    switch (tradingInfo.dex) {
+      case 'Cetus':
+        const cetusTxResult = await sellDirectCetus(tradingInfo);
+        tx = typeof cetusTxResult === 'string' ? cetusTxResult : '';
+        break;
+
+      case 'BlueMove':
+        const bluemoveTxResult = await tryAgg(tradingInfo.tokenToSell, "0x2::sui::SUI", tradingInfo.tokenOnWallet);
+        tx = bluemoveTxResult || '';
+        break;
+
+      default:
+        console.log("Unsupported DEX");
+        return;
+    }
+
+    if (!tx) {
+      throw new Error('Sell transaction failed to execute');
+    }
+
+    const trade = await SUI.client.waitForTransaction({
+      digest: tx,
+      options: { showBalanceChanges: true },
+      pollInterval: POLL_INTERVAL,
+      timeout: TRANSACTION_TIMEOUT
+    });
+
+    const { balanceChanges } = trade;
+    if (!balanceChanges?.length) {
+      throw new Error('No balance changes in sell transaction');
+    }
+
+    const suiBalance = balanceChanges.find((b: any) => b.coinType.endsWith("::sui::SUI"));
+    if (!suiBalance) {
+      throw new Error('SUI balance change not found');
+    }
+
+    await updateTrade({
+      poolAddress: tradingInfo.poolAddress,
+      sellDigest: tx,
+      suiReceivedAmount: Math.abs(Number(suiBalance.amount)).toString(),
+    });
+
+    await sendSellMessage(tx, tradingInfo.poolAddress);
+
+  } catch (e) {
+    console.error("Error in sellAction:", e);
+    sendErrorMessage({ 
+      message: `Sell failed for ${tradingInfo.tokenToSell}: ${e instanceof Error ? e.message : 'Unknown error'}`
+    });
+    throw e; // Re-throw to be handled by caller
+  }
 }
 
 async function tryAgg(_coinIn: string, _coinOut: string, amount: string): Promise<string | null> {
@@ -281,7 +343,7 @@ export class TradingStrategy {
   ): Promise<TradeResult> {
     try {
       // Sicherheitsprüfung
-      const security = await checkPoolSecurity(poolData.poolId, poolData.dex);
+      const security = await checkPoolSecurity(poolData.poolId, poolData.dex, poolData.tokenAddress);
       if (!security.isSecure) {
         return {
           success: false,
@@ -445,7 +507,7 @@ export class TradingStrategy {
   }
 }
 
-export async function buyAction(digest: string, info: ParsedPoolData | null) {
+async function buyAction(digest: string, info: ParsedPoolData | null) {
   const { client } = SUI;
 
   try {
@@ -484,15 +546,15 @@ export async function buyAction(digest: string, info: ParsedPoolData | null) {
       scamProbability: scamChance
     };
 
-    await upsertTrade(tradeData);
+    await upsertTrade(tradeData as any);
 
     const tradingInfo: TradingInfo = {
       initialSolAmount: '0',
       currentAmount: '0',
       tokenToSell: tokenBalance.coinType,
       tokenOnWallet: tokenBalance.amount,
-      poolAddress: info.poolId, // Jetzt garantiert nicht undefined
-      dex: info?.dex || 'Cetus',
+      poolAddress: info.poolId, 
+      dex: info?.dex as SUPPORTED_DEX || 'Cetus',
       suiIsA: info?.coinA.endsWith("::sui::SUI") === true,
       scamProbability: scamChance
     };
@@ -502,70 +564,11 @@ export async function buyAction(digest: string, info: ParsedPoolData | null) {
       sellAction: () => sellAction(tradingInfo)
     });
 
-  } catch (e);
+    return tradeData;
+  } catch (e) {
     console.error("Error in buyAction:", e);
     await wait(1000);
     return buyAction(digest, info);
-  }
-}
-
-export async function sellAction(tradingInfo: TradingInfo): Promise<void> {
-  let tx: string = '';
-
-  console.log("SELL ACTION::", tradingInfo);
-
-  try {
-    switch (tradingInfo.dex) {
-      case 'Cetus':
-        const cetusTxResult = await sellDirectCetus(tradingInfo);
-        tx = typeof cetusTxResult === 'string' ? cetusTxResult : '';
-        break;
-
-      case 'BlueMove':
-        const bluemoveTxResult = await tryAgg(tradingInfo.tokenToSell, "0x2::sui::SUI", tradingInfo.tokenOnWallet);
-        tx = bluemoveTxResult || '';
-        break;
-
-      default:
-        console.log("Unsupported DEX");
-        return;
-    }
-
-    if (!tx) {
-      throw new Error('Sell transaction failed to execute');
-    }
-
-    const trade = await SUI.client.waitForTransaction({
-      digest: tx,
-      options: { showBalanceChanges: true },
-      pollInterval: POLL_INTERVAL,
-      timeout: TRANSACTION_TIMEOUT
-    });
-
-    const { balanceChanges } = trade;
-    if (!balanceChanges?.length) {
-      throw new Error('No balance changes in sell transaction');
-    }
-
-    const suiBalance = balanceChanges.find((b: any) => b.coinType.endsWith("::sui::SUI"));
-    if (!suiBalance) {
-      throw new Error('SUI balance change not found');
-    }
-
-    await updateTrade({
-      poolAddress: tradingInfo.poolAddress,
-      sellDigest: tx,
-      suiReceivedAmount: Math.abs(Number(suiBalance.amount)).toString(),
-    });
-
-    await sendSellMessage(tx, tradingInfo.poolAddress);
-
-  } catch (e) {
-    console.error("Error in sellAction:", e);
-    sendErrorMessage({ 
-      message: `Sell failed for ${tradingInfo.tokenToSell}: ${e instanceof Error ? e.message : 'Unknown error'}`
-    });
-    throw e; // Re-throw to be handled by caller
   }
 }
 
@@ -621,7 +624,7 @@ async function recoverPoolData(trade: any): Promise<TradingInfo | null> {
   }
 }
 
-export async function runTrade(): Promise<never> {
+async function runTrade(): Promise<never> {
   console.log("Running trade monitor");
 
   while (true) {
@@ -747,3 +750,6 @@ async function performTrade(info: TradingInfo): Promise<void> {
 
 // Exportiere eine Singleton-Instanz
 export const tradingStrategy = TradingStrategy.getInstance();
+
+// Exportiere die Funktionen
+export { buyAction, runTrade };
